@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta name="description" content="SoftNStreamAlarm — a calming alarm, YouTube wake-up player, pie timer, water fill timer, and stopwatch with golden cosmic visuals." />
+<link rel="canonical" href="https://YOUR-LIVE-URL-HERE/" />
+<meta property="og:title" content="SoftNStreamAlarm" />
+<meta property="og:description" content="Soft alarm + YouTube wake-up + pie timer + stopwatch — soothing cosmic visuals." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://YOUR-LIVE-URL-HERE/" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SoftNStreamAlarm</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+
+<body>
+  <video id="bgVideo" class="bgVideo" autoplay muted loop playsinline></video>
+
+  <div class="bgOverlay"></div>
+  <canvas id="fxCanvas"></canvas>
+
+  <header class="topBar">
+    <div class="titleCloud">
+      <div class="titleSparkles" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span>
+      </div>
+      <div class="titleCloudText">Soft alarms • YouTube • Pie Timer • Stopwatch</div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT -->
+    <aside class="side card leftSide alarmCard">
+      <div class="panelTitle alarmTitle">Alarm</div>
+
+      <!-- Alarm block now contains volume INSIDE the same block -->
+      <div class="alarmRowTop">
+        <div class="alarmControls">
+          <div class="row wrap tightRow">
+            <label class="stretch">
+              Sound
+              <select id="alarmSound">
+                <option value="chime">Soft Chime</option>
+                <option value="bells">Warm Bells</option>
+                <option value="ocean">Ocean Pulse</option>
+                <option value="dawn">Dawn Pad</option>
+                <option value="goldBells">Golden Bells</option>
+                <option value="crystal">Crystal Tones</option>
+                <option value="harp">Soft Harp</option>
+              </select>
+            </label>
+
+            <label class="toggle">
+              <input id="alarmEnabled" type="checkbox" checked />
+              Enable
+            </label>
+          </div>
+
+          <div class="row alarmBtnRow tightRow">
+            <button id="testAlarm" class="primary alarmBtn">Test alarm</button>
+            <button id="stopAlarm" class="danger alarmBtn">Stop</button>
+          </div>
+        </div>
+
+        <!-- Volume now inside same alarm block -->
+        <div class="alarmVolInline">
+          <div class="alarmVolLabel">Alarm volume</div>
+          <div class="alarmVolSliderRow">
+            <input id="alarmVol" class="vSlider" type="range" min="0" max="100" value="80" />
+            <div id="alarmVolPct" class="alarmVolPctSide">80%</div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="sep compactSep"/>
+
+      <div class="panelTitle centerTitle">Stopwatch</div>
+      <div id="swDisplay" class="swBig swCenter">00:00.0</div>
+
+      <div class="swFlowerWrap swCenter" aria-label="stopwatch progress flower">
+        <svg viewBox="0 0 220 220" class="swFlowerSvg">
+          <defs>
+            <filter id="goldGlow">
+              <feGaussianBlur stdDeviation="3.5" result="blur"></feGaussianBlur>
+              <feMerge>
+                <feMergeNode in="blur"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+              </feMerge>
+            </filter>
+          </defs>
+
+          <path class="swFlowerBg" d="" id="swFlowerBg"></path>
+          <path class="swFlowerFg" d="" id="swFlowerFg" filter="url(#goldGlow)"></path>
+        </svg>
+
+        <div class="swFlowerPct" id="swFlowerPct">0%</div>
+      </div>
+
+      <div class="row tightRow swButtons">
+        <button id="swStart" class="primary">Start</button>
+        <button id="swLap">Lap</button>
+        <button id="swReset">Reset</button>
+      </div>
+
+      <div class="row wrap tightRow swSettings">
+        <label class="stretch">
+          Alarm at (mm:ss)
+          <input id="swAlarmAt" type="text" value="01:00" placeholder="e.g. 05:00"/>
+        </label>
+
+        <label class="toggle">
+          <input id="swAlarmOn" type="checkbox" checked />
+          Trigger
+        </label>
+      </div>
+
+      <ol id="lapList" class="laps compactLaps swCenterList"></ol>
+    </aside>
+
+    <!-- CENTER -->
+    <section class="center">
+      <section class="hero heroTight">
+        <div id="clockTime" class="heroTime">--:--:--:---</div>
+        <div id="clockDate" class="heroDate">---</div>
+      </section>
+
+      <section class="centerCard card centerCardTight ytCard">
+        <div class="panelTitle">Circle clock (red = alarm time)</div>
+
+        <div class="analogWrap compactAnalog">
+          <svg id="analogClock" class="analogClock compactClock" viewBox="0 0 240 240" aria-label="Analog clock with alarm overlay">
+            <defs>
+              <filter id="clockGlow">
+                <feGaussianBlur stdDeviation="2.6" result="blur"></feGaussianBlur>
+                <feMerge>
+                  <feMergeNode in="blur"></feMergeNode>
+                  <feMergeNode in="SourceGraphic"></feMergeNode>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <circle cx="120" cy="120" r="106" class="clockRing"></circle>
+            <circle cx="120" cy="120" r="94" class="clockInner"></circle>
+
+            <g id="clockTicks"></g>
+
+            <g id="clockHandsNow" filter="url(#clockGlow)">
+              <line id="handHour" x1="120" y1="120" x2="120" y2="72" class="hand hour"></line>
+              <line id="handMin"  x1="120" y1="120" x2="120" y2="54" class="hand min"></line>
+              <line id="handSec"  x1="120" y1="128" x2="120" y2="34" class="hand sec"></line>
+              <line id="handMs"   x1="120" y1="128" x2="120" y2="26" class="hand ms"></line>
+            </g>
+
+            <g id="clockHandsAlarm">
+              <line id="aHandHour" x1="120" y1="120" x2="120" y2="78" class="aHand hour"></line>
+              <line id="aHandMin"  x1="120" y1="120" x2="120" y2="60" class="aHand min"></line>
+              <line id="aHandSec"  x1="120" y1="128" x2="120" y2="40" class="aHand sec"></line>
+              <line id="aHandMs"   x1="120" y1="128" x2="120" y2="32" class="aHand ms"></line>
+            </g>
+
+            <circle cx="120" cy="120" r="6" class="clockHub"></circle>
+            <circle cx="120" cy="120" r="2.2" class="clockHub2"></circle>
+          </svg>
+        </div>
+
+        <div class="panelTitle">YouTube</div>
+        <div class="embed megaEmbed compactEmbed" id="ytEmbed"></div>
+
+        <button id="sleepBtn" class="sleepBtn" type="button">Sleep</button>
+
+        <div class="row wrap tightRow">
+          <label class="stretch">
+            Preset
+            <select id="preset">
+              <option value="">(preset)</option>
+              <option value="https://www.youtube.com/watch?v=IvfolR9QOEc">Preset — Soft peaceful morning mix (1h)</option>
+              <option value="https://www.youtube.com/watch?v=zSQdXhxkjw4">Preset — Good Morning Meditation (1h)</option>
+              <option value="https://www.youtube.com/watch?v=yK2dCwjNhMs">Preset — Calm Morning gentle wake up</option>
+              <option value="https://www.youtube.com/watch?v=YxfnUPqWV0k">Preset — Morning Relaxing Piano</option>
+              <option value="https://www.youtube.com/watch?v=8dWkU6MSFnI">Preset — Calm Piano to wake up</option>
+              <option value="https://www.youtube.com/watch?v=UZQiB4oLky8">Preset — Morning Salutation (1h)</option>
+              <option value="https://www.youtube.com/watch?v=hlWiI4xVXKY">Preset — Sunny Mornings (piano+guitar)</option>
+              <option value="https://www.youtube.com/watch?v=vSyt3D1eut8">Preset — 528Hz gentle morning</option>
+              <option value="https://www.youtube.com/watch?v=cTDGis2JHUE">Preset — Relaxing morning (3h)</option>
+              <option value="https://www.youtube.com/watch?v=PPcLAFOdtj8">Preset — Wake up happy & positive</option>
+              <option value="https://www.youtube.com/watch?v=RNeLU-5yR04">Preset — Powerful morning (softer energy)</option>
+            </select>
+          </label>
+
+          <label class="stretch">
+            YouTube URL
+            <input id="ytUrl" type="url" placeholder="Paste a YouTube URL (or pick a preset)" />
+          </label>
+
+          <button id="loadEmbed" class="primary">Load</button>
+        </div>
+
+        <div class="ytVolRow tightRow">
+          <span class="volLabel">YouTube volume</span>
+          <input id="ytVol" type="range" min="0" max="100" value="70" />
+          <span id="ytVolPct" class="volPct">70%</span>
+        </div>
+
+        <div class="cosmicUnderVideo">
+          <label class="cosmicLabel">
+            Cosmic background
+            <select id="cosmicSelect">
+              <option value="starfield-drift.mp4">Starfield Drift</option>
+              <option value="nebula-glow.mp4">Nebula Glow</option>
+              <option value="galaxy-spiral.mp4">Galaxy Spiral</option>
+              <option value="space-warp.mp4">Space Warp</option>
+              <option value="aurora-space.mp4">Aurora Space</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="alarmPickRow compactAlarmRow">
+          <div class="alarmPickLine">
+            <div class="alarmPickInlineTitle">Alarm time</div>
+
+            <div class="alarmPickInlineFields">
+              <label class="miniLbl">
+                Hour
+                <input id="alarmHour" class="miniNum" type="number" min="0" max="23" value="7">
+              </label>
+              <label class="miniLbl">
+                Minute
+                <input id="alarmMin" class="miniNum" type="number" min="0" max="59" value="30">
+              </label>
+              <label class="miniLbl">
+                Second
+                <input id="alarmSec" class="miniNum" type="number" min="0" max="59" value="0">
+              </label>
+              <label class="miniLbl">
+                Ms
+                <input id="alarmMs" class="miniNumMs" type="number" min="0" max="999" value="0">
+              </label>
+            </div>
+
+            <label class="alarmCenterToggle">
+              <input id="alarmEnabledCenter" type="checkbox" />
+              <span>Enable</span>
+            </label>
+
+            <div id="alarmCenterValue" class="alarmCenterValue">--:--:--:---</div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- RIGHT -->
+    <aside class="side card rightSide timerCard">
+      <div class="panelTitle">Pie Timer</div>
+
+      <div class="timerTime" id="timerDisplay">05:00</div>
+
+      <div class="row wrap tightRow">
+        <label class="stretch">
+          Minutes
+          <input id="timerMin" type="number" min="0" max="999" value="5"/>
+        </label>
+        <label class="stretch">
+          Seconds
+          <input id="timerSec" type="number" min="0" max="59" value="0"/>
+        </label>
+      </div>
+
+      <div class="row tightRow">
+        <button id="timerStart" class="primary">Start</button>
+        <button id="timerPause">Pause</button>
+        <button id="timerReset">Reset</button>
+      </div>
+
+      <!-- Bigger pie -->
+      <div class="pieArea bigPie">
+        <svg viewBox="0 0 300 300" class="pieSvg" aria-label="timer progress">
+          <circle class="pieBg" cx="150" cy="150" r="118"></circle>
+          <circle class="pieFg" id="pieFg" cx="150" cy="150" r="118"></circle>
+        </svg>
+        <div class="pieCenterText">
+          <div id="piePct" class="piePct">0%</div>
+          <div class="pieSub">complete</div>
+        </div>
+      </div>
+
+      <div class="panelTitle waterTitle">Water container</div>
+
+      <!-- Bigger tank -->
+      <div class="fillTank bigTank" aria-label="timer fill tank">
+        <div class="fillLiquid" id="fillLiquid">
+          <div class="fillSparkles"></div>
+          <div class="fillBubbles"></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="app.js"></script>
+</body>
+</html>
