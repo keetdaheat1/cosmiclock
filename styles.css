@@ -7,14 +7,6 @@
   --uiScale: 1.06;
 }
 
-.siteTitle{
-  position: relative;
-  z-index: 10;
-  text-align: center;
-  margin-top: 18px;
-}
-
-
 *{ box-sizing: border-box; }
 html,body{ height:100%; }
 
@@ -60,6 +52,12 @@ body{
 }
 
 /* Top */
+.siteTitle{
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  margin-top: 18px;
+}
 .topBar{
   position: relative;
   z-index: 3;
