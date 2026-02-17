@@ -990,3 +990,98 @@ body{
 input[type="number"]{
   font-variant-numeric: tabular-nums;
 }
+
+/* =========================
+   Alarm Time labels
+   Hour / Minute / Second / ms
+   ========================= */
+
+/* Make the label text bold */
+.alarmTimeRow label,
+.alarmRowTime label,
+.timeInputs label{
+  font-weight: 700;          /* BOLD */
+  text-align: center;        /* center label text */
+  align-items: center;       /* center in flex column */
+  width: 100%;
+}
+
+/* Center each label-input block */
+.alarmTimeRow,
+.alarmRowTime,
+.timeInputs{
+  justify-content: center;
+}
+
+/* Ensure inputs stay centered under labels */
+.alarmTimeRow input,
+.alarmRowTime input,
+.timeInputs input{
+  text-align: center;
+}
+
+/* =========================
+   ALARM TIME — BIG SHINY NUMBERS
+   ========================= */
+
+.alarmTimeRow input,
+.alarmRowTime input,
+.timeInputs input{
+  font-weight: 900;                 /* ULTRA bold */
+  font-size: 28px;                  /* BIG */
+  text-align: center;
+
+  /* Make digits align perfectly */
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+
+  /* Glass input look */
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 12px;
+
+  padding: 8px 6px;
+
+  /* SHINY text effect */
+  color: #ffffff;
+
+  text-shadow:
+    0 0 8px rgba(255,255,255,0.7),
+    0 0 18px rgba(255,206,105,0.55),
+    0 0 28px rgba(175,110,255,0.35);
+
+  /* Subtle glow around box */
+  box-shadow:
+    inset 0 0 8px rgba(255,255,255,0.08),
+    0 0 12px rgba(255,206,105,0.25);
+
+  transition: all 0.18s ease;
+}
+
+/* Focus glow — looks fantastic when editing */
+.alarmTimeRow input:focus,
+.alarmRowTime input:focus,
+.timeInputs input:focus{
+  outline: none;
+
+  border-color: rgba(255,206,105,0.85);
+
+  box-shadow:
+    inset 0 0 10px rgba(255,255,255,0.15),
+    0 0 18px rgba(255,206,105,0.6),
+    0 0 36px rgba(175,110,255,0.35);
+}
+
+/* Remove number spinner arrows (clean look) */
+
+/* Chrome / Edge / Safari */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"]{
+  -moz-appearance: textfield;
+}
