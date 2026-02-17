@@ -7,6 +7,110 @@
   --uiScale: 1.06;
 }
 
+/* =========================
+   RESPONSIVE + RESOLUTION
+   iPad + Windows/desktop
+   ========================= */
+
+/* Fluid scaling instead of a fixed --uiScale */
+:root{
+  --uiScale: 1;
+}
+body{
+  /* Smoothly scale UI between phones and big desktops */
+  font-size: clamp(14px, 1.1vw, 17px);
+}
+
+/* Keep everything from overflowing horizontally */
+.layout, .center, .side, .card, .embed, .fillTank, .pieArea{
+  min-width: 0;
+}
+body{
+  overflow-x: hidden;
+}
+
+/* Make the 3 columns fit better on laptops / smaller desktops */
+@media (max-width: 1360px){
+  .layout{
+    grid-template-columns: 300px minmax(0, 1fr) 300px;
+  }
+  .centerCard{ max-width: 760px; }
+}
+
+/* iPad landscape and similar widths: switch to 2 columns
+   Left and Right become side-by-side under the center (or stacked nicely) */
+@media (max-width: 1180px){
+  .layout{
+    grid-template-columns: 1fr;
+    padding-top: 78px;  /* room for your top title */
+  }
+
+  /* Center stays first; side cards stack below */
+  .leftSide{ order: 2; }
+  .rightSide{ order: 3; }
+  .center{ order: 1; }
+
+  .centerCard{
+    max-width: 980px;
+    width: 100%;
+  }
+
+  /* Keep YouTube from being too wide */
+  .megaEmbed{
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+}
+
+/* iPad portrait / smaller tablets: tighten spacing and ensure everything fits */
+@media (max-width: 820px){
+  .layout{ padding: 86px 10px 14px; gap: 10px; }
+
+  .heroTime{
+    font-size: clamp(34px, 7vw, 48px);
+  }
+
+  .centerCard{ padding: 12px; }
+
+  /* Reduce embed height slightly to keep timer visible on one screen */
+  .megaEmbed{
+    aspect-ratio: 16 / 10;
+  }
+
+  /* Big visuals scale down to avoid pushing content off-screen */
+  .bigPie{ max-width: 320px; }
+  .bigTank{ max-width: 340px; height: 200px; }
+
+  /* Alarm volume layout becomes horizontal (no cramped overflow) */
+  .alarmRowTop{
+    grid-template-columns: 1fr;
+  }
+  .alarmVolInline{
+    justify-items: stretch;
+  }
+  .alarmVolSliderRow{
+    width: 100%;
+    height: auto;
+    justify-content: flex-start;
+  }
+  .vSlider{
+    transform: none;
+    width: 100%;
+  }
+  .alarmVolPctSide{
+    margin-left: 10px;
+  }
+}
+
+/* Very small screens (phones) – stack and keep controls usable */
+@media (max-width: 520px){
+  .heroTime{ font-size: 34px; }
+  .alarmBtn{ width: 100%; }
+  .alarmBtnRow{ flex-direction: column; }
+}
+
+
 *{ box-sizing: border-box; }
 html,body{ height:100%; }
 
