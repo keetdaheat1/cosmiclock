@@ -1085,3 +1085,42 @@ input[type="number"]::-webkit-inner-spin-button{
 input[type="number"]{
   -moz-appearance: textfield;
 }
+
+/* FORCE big shiny digits in the Alarm Time inputs */
+#alarmHour, #alarmMin, #alarmSec, #alarmMs{
+  font-weight: 900 !important;
+  font-size: 30px !important;
+  line-height: 1.1 !important;
+  text-align: center !important;
+
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: 1px !important;
+
+  color: #fff !important;
+  text-shadow:
+    0 0 8px rgba(255,255,255,0.75),
+    0 0 18px rgba(255,206,105,0.55),
+    0 0 28px rgba(175,110,255,0.35) !important;
+
+  background: rgba(0,0,0,0.45) !important;
+  border: 1px solid rgba(255,255,255,0.28) !important;
+  box-shadow:
+    inset 0 0 8px rgba(255,255,255,0.08),
+    0 0 12px rgba(255,206,105,0.25) !important;
+}
+
+/* Clean number spinners */
+#alarmHour::-webkit-outer-spin-button,
+#alarmHour::-webkit-inner-spin-button,
+#alarmMin::-webkit-outer-spin-button,
+#alarmMin::-webkit-inner-spin-button,
+#alarmSec::-webkit-outer-spin-button,
+#alarmSec::-webkit-inner-spin-button,
+#alarmMs::-webkit-outer-spin-button,
+#alarmMs::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+#alarmHour, #alarmMin, #alarmSec, #alarmMs{
+  -moz-appearance: textfield;
+}
