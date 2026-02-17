@@ -1,368 +1,212 @@
 <!doctype html>
 <html lang="en">
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Cosmiclock",
-  "url": "https://keetdaheat1.github.io/cosmiclock/"
-  "applicationCategory": "UtilitiesApplication",
-  "operatingSystem": "All",
-  "description": "A calming alarm clock with soft tones, YouTube wake-up videos, timers and stopwatch.",
-  "browserRequirements": "Requires JavaScript",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  }
-}
-</script>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-
 <head>
-  <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <!-- Primary SEO -->
-  <title>Cosmiclock — Online Alarm Clock</title>
-  <meta name="description"
-        content="Cosmiclock is a calming online alarm clock with gentle sounds, YouTube wake-up videos, pie timer, water fill timer, stopwatch, and cosmic visuals." />
+  <title>Cosmicclock — Online Alarm Clock</title>
+  <meta name="description" content="Cosmicclock — a gentle online alarm clock with soothing sounds, YouTube wake-up videos, pie timer, water timer, and stopwatch." />
+  <link rel="canonical" href="https://www.cosmicclock.net/" />
 
-  <meta name="keywords"
-        content="online alarm clock, gentle alarm, wake up music, youtube alarm, soft alarm, timer, stopwatch, meditation alarm, morning alarm" />
-
-  <meta name="author" content="Cosmiclock" />
-
-  <!-- Canonical URL (IMPORTANT) -->
-  <link rel="canonical" href="https://keetdaheat1.github.io/cosmiclock/" />
-
-  <!-- Open Graph (for Discord, Facebook, etc.) -->
-  <meta property="og:title" content="Cosmiclock — Gentle Alarm Clock & YouTube Wake-Up Player" />
-  <meta property="og:description"
-        content="A calming alarm clock with soft tones, YouTube wake-up videos, pie timer, water fill timer and cosmic visuals." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://keetdaheat1.github.io/cosmiclock/" />
-  <meta property="og:image" content="https://keetdaheat1.github.io/cosmiclock/" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Cosmicclock — Gentle Alarm Clock & YouTube Wake-Up Player" />
-  <meta name="twitter:description"
-        content="Soft alarms, wake-up music, timers, stopwatch, and cosmic visuals." />
-  <meta name="twitter:image" content="https://YOUR-LIVE-URL/preview.png" />
-
-  <!-- Theme color (mobile browsers) -->
-  <meta name="theme-color" content="#1a0f2e" />
-
-  <!-- Robots -->
-  <meta name="robots" content="index, follow" />
-
-  <link rel="stylesheet" href="styles.css?v=2"/>
-<link rel="icon" href="favicon.ico" />
-  <title>Cosmiclock</title>
-<h1 class="siteTitle">Cosmiclock — Gentle Online Alarm Clock</h1>
-
-
-  <meta charset="UTF-8"/>
-  <meta name="description" content="Cosmiclock — a calming alarm, YouTube wake-up player, pie timer, water fill timer, and stopwatch with golden cosmic visuals." />
-<link rel="canonical" href="https://keetdaheat1.github.io/cosmiclock//" />
-<meta property="og:title" content="Cosmiclock" />
-<meta property="og:description" content="Soft alarm + YouTube wake-up + pie timer + stopwatch — soothing cosmic visuals." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://keetdaheat1.github.io/cosmiclock/" />
-
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="styles.css?v=10" />
 </head>
 
 <body>
   <video id="bgVideo" class="bgVideo" autoplay muted loop playsinline></video>
-
   <div class="bgOverlay"></div>
   <canvas id="fxCanvas"></canvas>
 
   <header class="topBar">
-    <div class="titleCloud">
-      <div class="titleSparkles" aria-hidden="true">
-        <span></span><span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span><span></span>
-        <span></span><span></span>
-      </div>
-      <div class="titleCloudText">Soft alarms • YouTube • Pie Timer • Stopwatch</div>
-    </div>
+    <h1 class="siteTitle">Cosmicclock — Gentle Online Alarm Clock</h1>
   </header>
 
   <main class="layout">
-    <!-- LEFT -->
-    <aside class="side card leftSide alarmCard">
-      <div class="panelTitle alarmTitle">Alarm</div>
+    <!-- LEFT: ALARM -->
+    <aside class="side card alarmCard">
+      <div class="panelTitle centeredTitle">Alarm</div>
 
-      <!-- Alarm block now contains volume INSIDE the same block -->
-      <div class="alarmRowTop">
-        <div class="alarmControls">
-          <div class="row wrap tightRow">
-            <label class="stretch">
-              Sound
-              <select id="alarmSound">
-                <option value="chime">Soft Chime</option>
-                <option value="bells">Warm Bells</option>
-                <option value="ocean">Ocean Pulse</option>
-                <option value="dawn">Dawn Pad</option>
-                <option value="goldBells">Golden Bells</option>
-                <option value="crystal">Crystal Tones</option>
-                <option value="harp">Soft Harp</option>
-              </select>
-            </label>
+      <div class="alarmTopGrid">
+        <div class="alarmLeftControls">
+          <label>
+            Sound
+            <select id="alarmSound">
+              <option value="chime">Soft Chime</option>
+              <option value="bells">Warm Bells</option>
+              <option value="crystal">Crystal Tones</option>
+              <option value="dawn">Dawn Pad</option>
+              <option value="ocean">Ocean Pulse</option>
+            </select>
+          </label>
 
-            <label class="toggle">
-              <input id="alarmEnabled" type="checkbox" checked />
+          <div class="rowInline">
+            <label class="toggleInline">
+              <input id="alarmEnabled" type="checkbox" />
               Enable
             </label>
-          </div>
 
-          <div class="row alarmBtnRow tightRow">
-            <button id="testAlarm" class="primary alarmBtn">Test alarm</button>
-            <button id="stopAlarm" class="danger alarmBtn">Stop</button>
+            <button id="testAlarm" class="primary wideBtn">Test alarm</button>
+            <button id="stopAlarm" class="danger wideBtn">Stop</button>
           </div>
         </div>
 
-        <!-- Volume now inside same alarm block -->
-        <div class="alarmVolInline">
-          <div class="alarmVolLabel">Alarm volume</div>
-          <div class="alarmVolSliderRow">
+        <div class="alarmVolBox">
+          <div class="alarmVolTitle">Alarm volume</div>
+          <div class="alarmVolStack">
             <input id="alarmVol" class="vSlider" type="range" min="0" max="100" value="80" />
-            <div id="alarmVolPct" class="alarmVolPctSide">80%</div>
+            <div id="alarmVolPct" class="alarmVolPct">80%</div>
           </div>
         </div>
       </div>
 
-      <hr class="sep compactSep"/>
+      <hr class="sep"/>
 
-      <div class="panelTitle centerTitle">Stopwatch</div>
-      <div id="swDisplay" class="swBig swCenter">00:00.0</div>
+      <div class="panelTitle centeredTitle">Alarm time</div>
 
-      <div class="swFlowerWrap swCenter" aria-label="stopwatch progress flower">
-        <svg viewBox="0 0 220 220" class="swFlowerSvg">
-          <defs>
-            <filter id="goldGlow">
-              <feGaussianBlur stdDeviation="3.5" result="blur"></feGaussianBlur>
-              <feMerge>
-                <feMergeNode in="blur"></feMergeNode>
-                <feMergeNode in="SourceGraphic"></feMergeNode>
-              </feMerge>
-            </filter>
-          </defs>
+      <!-- iPad-safe steppers -->
+      <div class="stepperRow" id="alarmStepperRow">
+        <div class="stepField">
+          <div class="stepLabel">Hour</div>
+          <div class="stepControl">
+            <button class="stepBtn" type="button" data-step="down" data-target="alarmHour">−</button>
+            <input id="alarmHour" type="number" min="0" max="23" step="1" value="7">
+            <button class="stepBtn" type="button" data-step="up" data-target="alarmHour">+</button>
+          </div>
+        </div>
 
-          <path class="swFlowerBg" d="" id="swFlowerBg"></path>
-          <path class="swFlowerFg" d="" id="swFlowerFg" filter="url(#goldGlow)"></path>
-        </svg>
+        <div class="stepField">
+          <div class="stepLabel">Minute</div>
+          <div class="stepControl">
+            <button class="stepBtn" type="button" data-step="down" data-target="alarmMin">−</button>
+            <input id="alarmMin" type="number" min="0" max="59" step="1" value="30">
+            <button class="stepBtn" type="button" data-step="up" data-target="alarmMin">+</button>
+          </div>
+        </div>
 
-        <div class="swFlowerPct" id="swFlowerPct">0%</div>
+        <div class="stepField">
+          <div class="stepLabel">Second</div>
+          <div class="stepControl">
+            <button class="stepBtn" type="button" data-step="down" data-target="alarmSec">−</button>
+            <input id="alarmSec" type="number" min="0" max="59" step="1" value="0">
+            <button class="stepBtn" type="button" data-step="up" data-target="alarmSec">+</button>
+          </div>
+        </div>
+
+        <div class="stepField">
+          <div class="stepLabel">Ms</div>
+          <div class="stepControl">
+            <button class="stepBtn" type="button" data-step="down" data-target="alarmMs">−</button>
+            <input id="alarmMs" type="number" min="0" max="999" step="1" value="0">
+            <button class="stepBtn" type="button" data-step="up" data-target="alarmMs">+</button>
+          </div>
+        </div>
       </div>
 
-      <div class="row tightRow swButtons">
-        <button id="swStart" class="primary">Start</button>
-        <button id="swLap">Lap</button>
-        <button id="swReset">Reset</button>
+      <div id="alarmTargetReadout" class="alarmReadout centeredReadout">Target: --:--:--:---</div>
+
+      <hr class="sep"/>
+
+      <div class="panelTitle centeredTitle">Cosmic Background</div>
+      <label class="fullWidth">
+        Choose
+        <select id="cosmicSelect">
+          <option value="starfield-drift.mp4">Starfield Drift</option>
+          <option value="nebula-glow.mp4">Nebula Glow</option>
+          <option value="galaxy-spiral.mp4">Galaxy Spiral</option>
+          <option value="space-warp.mp4">Space Warp</option>
+          <option value="aurora-space.mp4">Aurora Space</option>
+          <option value="void-gold.mp4">Void Gold</option>
+        </select>
+      </label>
+
+      <div class="hint">
+        Tip: keep your cosmic videos in the same repo folder as index.html for GitHub Pages.
       </div>
-
-      <div class="row wrap tightRow swSettings">
-        <label class="stretch">
-          Alarm at (mm:ss)
-          <input id="swAlarmAt" type="text" value="01:00" placeholder="e.g. 05:00"/>
-        </label>
-
-        <label class="toggle">
-          <input id="swAlarmOn" type="checkbox" checked />
-          Trigger
-        </label>
-      </div>
-
-      <ol id="lapList" class="laps compactLaps swCenterList"></ol>
     </aside>
 
-    <!-- CENTER -->
+    <!-- CENTER: CLOCK + YOUTUBE -->
     <section class="center">
-      <section class="hero heroTight">
+      <div class="hero">
         <div id="clockTime" class="heroTime">--:--:--:---</div>
         <div id="clockDate" class="heroDate">---</div>
-      </section>
+      </div>
 
-      <section class="centerCard card centerCardTight ytCard">
-        <div class="panelTitle">Circle clock (red = alarm time)</div>
+      <section class="card centerCard">
+        <div class="panelTitle centeredTitle">Circle Clock (red = alarm)</div>
 
-        <div class="analogWrap compactAnalog">
-          <svg id="analogClock" class="analogClock compactClock" viewBox="0 0 240 240" aria-label="Analog clock with alarm overlay">
-            <defs>
-              <filter id="clockGlow">
-                <feGaussianBlur stdDeviation="2.6" result="blur"></feGaussianBlur>
-                <feMerge>
-                  <feMergeNode in="blur"></feMergeNode>
-                  <feMergeNode in="SourceGraphic"></feMergeNode>
-                </feMerge>
-              </filter>
-            </defs>
-
+        <div class="analogWrap">
+          <svg id="analogClock" class="analogClock" viewBox="0 0 240 240">
             <circle cx="120" cy="120" r="106" class="clockRing"></circle>
             <circle cx="120" cy="120" r="94" class="clockInner"></circle>
-
             <g id="clockTicks"></g>
 
-            <g id="clockHandsNow" filter="url(#clockGlow)">
-              <line id="handHour" x1="120" y1="120" x2="120" y2="72" class="hand hour"></line>
-              <line id="handMin"  x1="120" y1="120" x2="120" y2="54" class="hand min"></line>
-              <line id="handSec"  x1="120" y1="128" x2="120" y2="34" class="hand sec"></line>
-              <line id="handMs"   x1="120" y1="128" x2="120" y2="26" class="hand ms"></line>
+            <!-- now hands -->
+            <g id="clockHandsNow">
+              <line id="handHour" x1="120" y1="120" x2="120" y2="78" class="hand hour"></line>
+              <line id="handMin"  x1="120" y1="120" x2="120" y2="60" class="hand min"></line>
+              <line id="handSec"  x1="120" y1="126" x2="120" y2="38" class="hand sec"></line>
+              <line id="handMs"   x1="120" y1="126" x2="120" y2="30" class="hand ms"></line>
             </g>
 
+            <!-- alarm hands -->
             <g id="clockHandsAlarm">
-              <line id="aHandHour" x1="120" y1="120" x2="120" y2="78" class="aHand hour"></line>
-              <line id="aHandMin"  x1="120" y1="120" x2="120" y2="60" class="aHand min"></line>
-              <line id="aHandSec"  x1="120" y1="128" x2="120" y2="40" class="aHand sec"></line>
-              <line id="aHandMs"   x1="120" y1="128" x2="120" y2="32" class="aHand ms"></line>
+              <line id="aHandHour" x1="120" y1="120" x2="120" y2="84" class="aHand hour"></line>
+              <line id="aHandMin"  x1="120" y1="120" x2="120" y2="66" class="aHand min"></line>
+              <line id="aHandSec"  x1="120" y1="126" x2="120" y2="44" class="aHand sec"></line>
+              <line id="aHandMs"   x1="120" y1="126" x2="120" y2="36" class="aHand ms"></line>
             </g>
 
             <circle cx="120" cy="120" r="6" class="clockHub"></circle>
-            <circle cx="120" cy="120" r="2.2" class="clockHub2"></circle>
           </svg>
+
+          <button id="sleepBtn" class="sleepBtn" type="button">Sleep</button>
         </div>
 
-        <div class="panelTitle">YouTube</div>
-        <div class="embed megaEmbed compactEmbed" id="ytEmbed"></div>
+        <div class="panelTitle centeredTitle">YouTube</div>
+        <div class="embed" id="ytEmbed">
+          <div class="muted">Load a preset or paste a YouTube link</div>
+        </div>
 
-        <button id="sleepBtn" class="sleepBtn" type="button">Sleep</button>
-
-        <div class="row wrap tightRow">
+        <div class="row wrap centeredRow">
           <label class="stretch">
             Preset
             <select id="preset">
               <option value="">(preset)</option>
-              <option value="https://www.youtube.com/watch?v=IvfolR9QOEc">Preset — Soft peaceful morning mix (1h)</option>
-              <option value="https://www.youtube.com/watch?v=zSQdXhxkjw4">Preset — Good Morning Meditation (1h)</option>
-              <option value="https://www.youtube.com/watch?v=yK2dCwjNhMs">Preset — Calm Morning gentle wake up</option>
-              <option value="https://www.youtube.com/watch?v=YxfnUPqWV0k">Preset — Morning Relaxing Piano</option>
-              <option value="https://www.youtube.com/watch?v=8dWkU6MSFnI">Preset — Calm Piano to wake up</option>
-              <option value="https://www.youtube.com/watch?v=UZQiB4oLky8">Preset — Morning Salutation (1h)</option>
-              <option value="https://www.youtube.com/watch?v=hlWiI4xVXKY">Preset — Sunny Mornings (piano+guitar)</option>
+              <option value="https://www.youtube.com/watch?v=IvfolR9QOEc">Preset — Soft morning mix (1h)</option>
+              <option value="https://www.youtube.com/watch?v=zSQdXhxkjw4">Preset — Good Morning Meditation</option>
               <option value="https://www.youtube.com/watch?v=vSyt3D1eut8">Preset — 528Hz gentle morning</option>
-              <option value="https://www.youtube.com/watch?v=cTDGis2JHUE">Preset — Relaxing morning (3h)</option>
-              <option value="https://www.youtube.com/watch?v=PPcLAFOdtj8">Preset — Wake up happy & positive</option>
-              <option value="https://www.youtube.com/watch?v=RNeLU-5yR04">Preset — Powerful morning (softer energy)</option>
+              <option value="https://www.youtube.com/watch?v=YxfnUPqWV0k">Preset — Relaxing piano</option>
+              <option value="https://www.youtube.com/watch?v=PPcLAFOdtj8">Preset — Wake up happy</option>
+              <option value="https://www.youtube.com/watch?v=cTDGis2JHUE">Preset — Calm morning (3h)</option>
+              <option value="https://www.youtube.com/watch?v=UZQiB4oLky8">Preset — Morning salutation</option>
+              <option value="https://www.youtube.com/watch?v=hlWiI4xVXKY">Preset — Sunny mornings</option>
+              <option value="https://www.youtube.com/watch?v=8dWkU6MSFnI">Preset — Calm piano wake</option>
+              <option value="https://www.youtube.com/watch?v=RNeLU-5yR04">Preset — Soft energy morning</option>
             </select>
           </label>
 
           <label class="stretch">
             YouTube URL
-            <input id="ytUrl" type="url" placeholder="Paste a YouTube URL (or pick a preset)" />
+            <input id="ytUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." />
           </label>
 
           <button id="loadEmbed" class="primary">Load</button>
         </div>
 
-        <div class="ytVolRow tightRow">
+        <div class="ytVolRow">
           <span class="volLabel">YouTube volume</span>
           <input id="ytVol" type="range" min="0" max="100" value="70" />
           <span id="ytVolPct" class="volPct">70%</span>
         </div>
-
-        <div class="cosmicUnderVideo">
-          <label class="cosmicLabel">
-            Cosmic background
-            <select id="cosmicSelect">
-              <option value="starfield-drift.mp4">Starfield Drift</option>
-              <option value="nebula-glow.mp4">Nebula Glow</option>
-              <option value="galaxy-spiral.mp4">Galaxy Spiral</option>
-              <option value="space-warp.mp4">Space Warp</option>
-              <option value="aurora-space.mp4">Aurora Space</option>
-            </select>
-          </label>
-        </div>
-
-        <div class="alarmPickRow compactAlarmRow">
-          <div class="alarmPickLine">
-            <div class="alarmPickInlineTitle">Alarm time</div>
-
-            <div class="alarmPickInlineFields">
-  <div class="stepField">
-    <div class="stepLabel">Hour</div>
-    <div class="stepControl">
-      <button class="stepBtn" type="button" data-step="down" data-target="alarmHour">−</button>
-      <input id="alarmHour" type="number" min="0" max="23" step="1" value="7">
-      <button class="stepBtn" type="button" data-step="up" data-target="alarmHour">+</button>
-    </div>
-  </div>
-
-  <div class="stepField">
-    <div class="stepLabel">Minute</div>
-    <div class="stepControl">
-      <button class="stepBtn" type="button" data-step="down" data-target="alarmMin">−</button>
-      <input id="alarmMin" type="number" min="0" max="59" step="1" value="30">
-      <button class="stepBtn" type="button" data-step="up" data-target="alarmMin">+</button>
-    </div>
-  </div>
-
-  <div class="stepField">
-    <div class="stepLabel">Second</div>
-    <div class="stepControl">
-      <button class="stepBtn" type="button" data-step="down" data-target="alarmSec">−</button>
-      <input id="alarmSec" type="number" min="0" max="59" step="1" value="0">
-      <button class="stepBtn" type="button" data-step="up" data-target="alarmSec">+</button>
-    </div>
-  </div>
-
-  <div class="stepField">
-    <div class="stepLabel">Ms</div>
-    <div class="stepControl">
-      <button class="stepBtn" type="button" data-step="down" data-target="alarmMs">−</button>
-      <input id="alarmMs" type="number" min="0" max="999" step="1" value="0">
-      <button class="stepBtn" type="button" data-step="up" data-target="alarmMs">+</button>
-    </div>
-  </div>
-</div>
-
-
-            <label class="alarmCenterToggle">
-              <input id="alarmEnabledCenter" type="checkbox" />
-              <span>Enable</span>
-            </label>
-
-            <div id="alarmCenterValue" class="alarmCenterValue">--:--:--:---</div>
-          </div>
-        </div>
       </section>
     </section>
 
-    <!-- RIGHT -->
-    <aside class="side card rightSide timerCard">
-      <div class="panelTitle">Pie Timer</div>
+    <!-- RIGHT: TIMER -->
+    <aside class="side card timerCard">
+      <div class="panelTitle centeredTitle">Pie Timer</div>
 
-      <div class="timerTime" id="timerDisplay">05:00</div>
-
-      <div class="row wrap tightRow">
-        <label class="stretch">
-          Minutes
-          <input id="timerMin" type="number" min="0" max="999" value="5"/>
-        </label>
-        <label class="stretch">
-          Seconds
-          <input id="timerSec" type="number" min="0" max="59" value="0"/>
-        </label>
-      </div>
-
-      <div class="row tightRow">
-        <button id="timerStart" class="primary">Start</button>
-        <button id="timerPause">Pause</button>
-        <button id="timerReset">Reset</button>
-      </div>
-
-      <!-- Bigger pie -->
-      <div class="pieArea bigPie">
-        <svg viewBox="0 0 300 300" class="pieSvg" aria-label="timer progress">
+      <!-- Pie visual centered -->
+      <div class="pieArea">
+        <svg viewBox="0 0 300 300" class="pieSvg">
           <circle class="pieBg" cx="150" cy="150" r="118"></circle>
           <circle class="pieFg" id="pieFg" cx="150" cy="150" r="118"></circle>
         </svg>
@@ -372,10 +216,29 @@
         </div>
       </div>
 
-      <div class="panelTitle waterTitle">Water container</div>
+      <!-- Digits centered under pie -->
+      <div id="timerDisplay" class="timerDisplayCentered">01:00</div>
 
-      <!-- Bigger tank -->
-      <div class="fillTank bigTank" aria-label="timer fill tank">
+      <div class="row wrap centeredRow">
+        <label class="stretch">
+          Minutes
+          <input id="timerMin" type="number" min="0" max="999" value="1"/>
+        </label>
+        <label class="stretch">
+          Seconds
+          <input id="timerSec" type="number" min="0" max="59" value="0"/>
+        </label>
+      </div>
+
+      <div class="row centeredRow">
+        <button id="timerStart" class="primary">Start</button>
+        <button id="timerPause">Pause</button>
+        <button id="timerReset">Reset</button>
+      </div>
+
+      <div class="panelTitle centeredTitle">Water Container</div>
+
+      <div class="fillTank bigTank" aria-label="timer water tank">
         <div class="fillLiquid" id="fillLiquid">
           <div class="fillSparkles"></div>
           <div class="fillBubbles"></div>
@@ -385,6 +248,6 @@
   </main>
 
   <script src="https://www.youtube.com/iframe_api"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>
