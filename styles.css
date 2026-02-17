@@ -1161,3 +1161,46 @@ input[type="number"]{
   margin-left: auto;
   margin-right: auto;
 }
+
+/* =========================
+   Alarm time inputs: centered + restore spinners
+   ========================= */
+
+/* Center the whole alarm time row */
+.alarmPickInlineFields{
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Center label + input within each mini block */
+.alarmPickInlineFields .miniLbl{
+  align-items: center;
+  text-align: center;
+}
+
+/* Make the shiny digits centered (you already have bold/shiny) */
+#alarmHour, #alarmMin, #alarmSec, #alarmMs{
+  text-align: center !important;
+}
+
+/* Re-enable spinner arrows ONLY for alarm time inputs */
+#alarmHour, #alarmMin, #alarmSec, #alarmMs{
+  -moz-appearance: auto !important;         /* Firefox */
+}
+
+/* Chrome/Edge/Safari spinners back */
+#alarmHour::-webkit-outer-spin-button,
+#alarmHour::-webkit-inner-spin-button,
+#alarmMin::-webkit-outer-spin-button,
+#alarmMin::-webkit-inner-spin-button,
+#alarmSec::-webkit-outer-spin-button,
+#alarmSec::-webkit-inner-spin-button,
+#alarmMs::-webkit-outer-spin-button,
+#alarmMs::-webkit-inner-spin-button{
+  -webkit-appearance: inner-spin-button !important;
+  appearance: auto !important;
+  margin: 0;
+}
