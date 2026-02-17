@@ -902,3 +902,91 @@ body{
     padding: 12px;
   }
 }
+
+/* =========================
+   COSMETIC TEXT POLISH
+   Center labels + bold time inputs
+   ========================= */
+
+/* Center key section titles */
+.panelTitle,
+.timerTitle,
+.sectionTitle,
+.alarmTitle{
+  text-align: center;
+  width: 100%;
+}
+
+/* Specific label overrides (covers most existing markup) */
+#pieTimerTitle,
+#waterContainerTitle,
+#cosmicBgTitle,
+#circleClockRedTitle,
+#youtubeTitle,
+#alarmTimeTitle{
+  text-align: center;
+  width: 100%;
+}
+
+/* Ensure labels inside cards are centered */
+.card .panelTitle,
+.card h2,
+.card h3{
+  text-align: center;
+}
+
+/* Center Alarm Time label row */
+.alarmTimeRow,
+.alarmRowTime,
+.alarmTimeTitle{
+  text-align: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Center YouTube label */
+.youtubeLabel,
+.embedLabel{
+  text-align: center;
+  width: 100%;
+}
+
+/* Center Pie Timer & Water Container titles */
+.pieArea .panelTitle,
+.fillTank .panelTitle{
+  text-align: center;
+}
+
+/* Center Cosmic Background title */
+.bgPanel .panelTitle{
+  text-align: center;
+}
+
+/* Center Circle Clock Red title */
+.clockPanel .panelTitle{
+  text-align: center;
+}
+
+/* =========================
+   BOLD TIME INPUT NUMBERS
+   Hour / Minute / Second / ms
+   ========================= */
+
+.alarmTimeRow input,
+.alarmRowTime input,
+.timeInputs input{
+  font-weight: 700;          /* bold */
+  font-size: 16px;           /* optional: slightly larger */
+  text-align: center;        /* keeps numbers neat */
+}
+
+/* Also bold placeholders (if visible) */
+.alarmTimeRow input::placeholder,
+.alarmRowTime input::placeholder{
+  font-weight: 700;
+}
+
+/* Optional: make number steppers cleaner */
+input[type="number"]{
+  font-variant-numeric: tabular-nums;
+}
