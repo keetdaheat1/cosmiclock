@@ -805,3 +805,100 @@ body.alarm-ringing .ytCard{
   .alarmVolSliderRow{ width: 100%; height: auto; }
   .vSlider{ transform: none; width: 100%; }
 }
+
+/* ===========================
+   iPad LANDSCAPE: fit one screen
+   =========================== */
+
+/* Use stable viewport height on mobile Safari */
+html, body{
+  height: 100%;
+}
+body{
+  min-height: 100dvh;                 /* iOS Safari real viewport */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Prevent the whole page from scrolling on iPad landscape.
+   Instead, let side panels scroll inside themselves if needed. */
+@media (min-width: 900px) and (max-width: 1180px) and (orientation: landscape){
+  body{
+    overflow: hidden;
+  }
+
+  /* Fit to viewport */
+  .layout{
+    height: 100dvh;
+    max-height: 100dvh;
+    padding-top: 76px;                 /* room for your top title cloud */
+    padding-bottom: 10px;
+    grid-template-columns: 280px minmax(0, 1fr) 280px;  /* 3 columns on iPad landscape */
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  /* Make all cards fill available height */
+  .side.card,
+  .centerCard.card{
+    height: calc(100dvh - 76px - 18px);
+    max-height: calc(100dvh - 76px - 18px);
+    overflow: auto;                    /* scroll inside card if needed */
+    overscroll-behavior: contain;
+  }
+
+  /* Reduce top “hero” height so center content fits */
+  .hero{
+    padding: 0 8px;
+    margin-top: -6px;
+  }
+  .heroTime{
+    font-size: 40px;                   /* smaller for iPad landscape */
+  }
+  .heroDate{
+    margin-top: 4px;
+  }
+
+  /* Keep analog clock compact */
+  .compactAnalog{
+    margin-top: 4px;
+    margin-bottom: 8px;
+  }
+  .compactClock{
+    width: 180px;
+    height: 180px;
+  }
+
+  /* Make YouTube embed not too tall (main culprit) */
+  .megaEmbed{
+    aspect-ratio: 16 / 10;
+    max-height: 300px;
+  }
+
+  /* Tighten spacing inside center card */
+  .centerCardTight{
+    padding: 12px;
+  }
+  .row{
+    margin: 7px 0;
+  }
+
+  /* Right timer visuals: smaller but still big */
+  .bigPie{ max-width: 300px; }
+  .bigTank{
+    max-width: 300px;
+    height: 170px;
+  }
+
+  /* Left alarm volume + buttons: avoid overflow */
+  .alarmRowTop{
+    grid-template-columns: 1fr 108px;
+  }
+  .vSlider{
+    width: 140px;                      /* slightly shorter */
+  }
+
+  /* Prevent huge shadows/spacing from pushing layout */
+  .card{
+    padding: 12px;
+  }
+}
