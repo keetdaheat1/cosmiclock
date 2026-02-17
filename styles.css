@@ -1204,3 +1204,60 @@ input[type="number"]{
   appearance: auto !important;
   margin: 0;
 }
+
+/* Alarm time steppers (works on iPad + desktop) */
+.alarmPickInlineFields{
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stepField{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.stepLabel{
+  font-weight: 800;
+  text-align: center;
+  color: rgba(255,255,255,0.86);
+}
+
+.stepControl{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Keep your big shiny digits */
+.stepControl input{
+  width: 88px;
+  text-align: center;
+}
+
+/* Buttons */
+.stepBtn{
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  font-weight: 900;
+  font-size: 22px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255,255,255,0.20);
+  background: rgba(255,255,255,0.10);
+}
+.stepBtn:hover{
+  background: rgba(255,255,255,0.14);
+}
+.stepBtn:active{
+  transform: translateY(1px);
+}
+

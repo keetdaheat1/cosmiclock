@@ -25,6 +25,34 @@ function parseMMSS(text){
   return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
 }
 
+// Alarm time steppers (iPad-safe)
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".stepBtn");
+  if (!btn) return;
+
+  const id = btn.dataset.target;
+  const dir = btn.dataset.step; // "up" or "down"
+  const input = document.getElementById(id);
+  if (!input) return;
+
+  const min = input.min === "" ? -Infinity : Number(input.min);
+  const max = input.max === "" ?  Infinity : Number(input.max);
+  const step = input.step === "" ? 1 : Number(input.step);
+
+  let val = input.value === "" ? 0 : Number(input.value);
+  val = dir === "up" ? val + step : val - step;
+
+  if (val < min) val = min;
+  if (val > max) val = max;
+
+  input.value = String(val);
+
+  // Trigger any listeners already in your app that depend on input changes:
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  input.dispatchEvent(new Event("change", { bubbles: true }));
+});
+
+
 /* ---------- Alarm display HH:MM:SS:MMM ---------- */
 function formatAlarmFromInputs(){
   const h  = clampInt($("alarmHour").value, 0, 23, 7);

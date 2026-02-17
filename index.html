@@ -288,23 +288,43 @@
             <div class="alarmPickInlineTitle">Alarm time</div>
 
             <div class="alarmPickInlineFields">
-              <label class="miniLbl">
-                Hour
-                <input id="alarmHour" class="miniNum" type="number" min="0" max="23" step="1" value="7">
-              </label>
-              <label class="miniLbl">
-                Minute
-                <input id="alarmMin" class="miniNum" type="number" min="0" max="59" step="1" value="30">
-              </label>
-              <label class="miniLbl">
-                Second
-                <input id="alarmSec" class="miniNum" type="number" min="0" max="59" step="1" value="0">
-              </label>
-              <label class="miniLbl">
-                Ms
-                <input id="alarmMs" class="miniNumMs" type="number" min="0" max="999" step="1" value="0">
-              </label>
-            </div>
+  <div class="stepField">
+    <div class="stepLabel">Hour</div>
+    <div class="stepControl">
+      <button class="stepBtn" type="button" data-step="down" data-target="alarmHour">−</button>
+      <input id="alarmHour" type="number" min="0" max="23" step="1" value="7">
+      <button class="stepBtn" type="button" data-step="up" data-target="alarmHour">+</button>
+    </div>
+  </div>
+
+  <div class="stepField">
+    <div class="stepLabel">Minute</div>
+    <div class="stepControl">
+      <button class="stepBtn" type="button" data-step="down" data-target="alarmMin">−</button>
+      <input id="alarmMin" type="number" min="0" max="59" step="1" value="30">
+      <button class="stepBtn" type="button" data-step="up" data-target="alarmMin">+</button>
+    </div>
+  </div>
+
+  <div class="stepField">
+    <div class="stepLabel">Second</div>
+    <div class="stepControl">
+      <button class="stepBtn" type="button" data-step="down" data-target="alarmSec">−</button>
+      <input id="alarmSec" type="number" min="0" max="59" step="1" value="0">
+      <button class="stepBtn" type="button" data-step="up" data-target="alarmSec">+</button>
+    </div>
+  </div>
+
+  <div class="stepField">
+    <div class="stepLabel">Ms</div>
+    <div class="stepControl">
+      <button class="stepBtn" type="button" data-step="down" data-target="alarmMs">−</button>
+      <input id="alarmMs" type="number" min="0" max="999" step="1" value="0">
+      <button class="stepBtn" type="button" data-step="up" data-target="alarmMs">+</button>
+    </div>
+  </div>
+</div>
+
 
             <label class="alarmCenterToggle">
               <input id="alarmEnabledCenter" type="checkbox" />
