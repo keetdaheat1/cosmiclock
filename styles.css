@@ -1124,3 +1124,40 @@ input[type="number"]{
 #alarmHour, #alarmMin, #alarmSec, #alarmMs{
   -moz-appearance: textfield;
 }
+
+/* =========================
+   CENTER PIE TIMER BLOCK
+   ========================= */
+
+/* Center the title */
+.pieArea .panelTitle{
+  text-align: center;
+  width: 100%;
+}
+
+/* Center the SVG pie itself */
+.pieArea{
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* horizontal centering */
+}
+
+/* Center the pie graphic */
+.pieArea svg,
+.pieArea .pie{
+  display: block;
+  margin: 0 auto;
+}
+
+/* Center percentage text inside */
+.pieText{
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Center the water container too */
+.fillTank{
+  margin-left: auto;
+  margin-right: auto;
+}
