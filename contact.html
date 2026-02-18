@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Contact — Cosmiclock</title>
+  <meta name="description" content="Contact Cosmiclock — send a quick message." />
+  <link rel="canonical" href="https://www.cosmicclock.net/contact.html" />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.ico" />
+</head>
+
+<body>
+  <video id="bgVideo" class="bgVideo" autoplay muted loop playsinline></video>
+  <div class="bgOverlay"></div>
+  <canvas id="fxCanvas"></canvas>
+
+  <header class="topBar">
+    <div class="titleCloud">
+      <div class="titleSparkles" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span>
+      </div>
+      <div class="titleCloudText">Soft alarms • YouTube • Pie Timer • Stopwatch</div>
+    </div>
+  </header>
+
+  <main class="layout" style="grid-template-columns: 1fr;">
+    <section class="card centerCard" style="max-width: 900px; margin: 0 auto;">
+      <h1 class="siteTitle" style="margin-top: 0;">Contact</h1>
+
+      <p style="color: rgba(255,255,255,0.86); line-height: 1.6; text-align:center;">
+        Send a quick note — this form uses your email app (no server needed).
+      </p>
+
+      <form class="card" style="background: rgba(0,0,0,0.18); border-radius: 18px; max-width: 700px; margin: 14px auto 0;">
+        <div class="row wrap">
+          <label class="stretch">
+            Name
+            <input id="cName" type="text" placeholder="Your name" />
+          </label>
+          <label class="stretch">
+            Email
+            <input id="cEmail" type="email" placeholder="you@example.com" />
+          </label>
+        </div>
+
+        <div class="row wrap">
+          <label class="stretch">
+            Message
+            <input id="cMsg" type="text" placeholder="What should Cosmiclock improve next?" />
+          </label>
+        </div>
+
+        <div class="row" style="justify-content:center;">
+          <button id="sendOkay" class="primary" type="button">Send Okay</button>
+          <a class="navBtn" href="./index.html">Back</a>
+        </div>
+
+        <p style="color: rgba(255,255,255,0.62); font-size: 12px; text-align:center; margin-top: 10px;">
+          This opens a mail draft on your device (no data is stored).
+        </p>
+      </form>
+    </section>
+  </main>
+
+  <!-- Bottom nav/share panel -->
+  <section class="sitePanel" aria-label="Cosmiclock navigation and share">
+    <div class="navButtons">
+      <a class="navBtn" href="./index.html">Home</a>
+      <a class="navBtn" href="./about.html">About Us</a>
+      <a class="navBtn" href="./faq.html">FAQ</a>
+      <a class="navBtn" href="./contact.html">Contact</a>
+    </div>
+
+    <div class="shareRow" aria-label="Share Cosmiclock">
+      <a class="iconBtn" href="https://www.instagram.com/" target="_blank" rel="noopener" title="Instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5z"/></svg>
+      </a>
+      <a class="iconBtn" href="https://twitter.com/intent/tweet?text=www.cosmicclock.net%20%E2%80%94%20Ayo!%20Check%20this%20out&url=https%3A%2F%2Fwww.cosmicclock.net%2F"
+         target="_blank" rel="noopener" title="X">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.7l-5.2-6.7L5.3 22H2l7.3-8.4L1 2h6.9l4.7 6.1L18.9 2z"/></svg>
+      </a>
+      <a class="iconBtn" href="https://www.reddit.com/submit?url=https%3A%2F%2Fwww.cosmicclock.net%2F&title=www.cosmicclock.net%20%E2%80%94%20Ayo!%20Check%20this%20out"
+         target="_blank" rel="noopener" title="Reddit">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12.2c0-1.3-1-2.3-2.3-2.3z"/></svg>
+      </a>
+      <a class="iconBtn" href="https://pinterest.com/pin/create/button/?url=https%3A%2F%2Fwww.cosmicclock.net%2F&description=www.cosmicclock.net%20%E2%80%94%20Ayo!%20Check%20this%20out"
+         target="_blank" rel="noopener" title="Pinterest">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.6 19.3"/></svg>
+      </a>
+      <a class="iconBtn" href="https://api.whatsapp.com/send?text=www.cosmicclock.net%20%E2%80%94%20Ayo!%20Check%20this%20out%20https%3A%2F%2Fwww.cosmicclock.net%2F"
+         target="_blank" rel="noopener" title="WhatsApp">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 2.6 17.9"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <script>
+    // Background video
+    (function(){
+      const v = document.getElementById("bgVideo");
+      if (!v) return;
+      v.src = "starfield-drift.mp4";
+      v.load();
+      const p = v.play();
+      if (p && p.catch) p.catch(()=>{});
+    })();
+
+    // Contact button -> mailto
+    document.getElementById("sendOkay").addEventListener("click", () => {
+      const name = encodeURIComponent(document.getElementById("cName").value || "");
+      const email = encodeURIComponent(document.getElementById("cEmail").value || "");
+      const msg = encodeURIComponent(document.getElementById("cMsg").value || "");
+
+      const subject = encodeURIComponent("Cosmiclock — Contact");
+      const body = encodeURIComponent(
+        `Name: ${decodeURIComponent(name)}\nEmail: ${decodeURIComponent(email)}\n\nMessage:\n${decodeURIComponent(msg)}\n\nSent from: https://www.cosmicclock.net/`
+      );
+
+      // Put your real inbox here if you want
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    });
+  </script>
+</body>
+</html>

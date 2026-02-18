@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>About — Cosmiclock</title>
+  <meta name="description" content="About Cosmiclock — a gentle online alarm clock with calming sounds, timers, and cosmic visuals." />
+  <link rel="canonical" href="https://www.cosmicclock.net/about.html" />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.ico" />
+</head>
+
+<body>
+  <video id="bgVideo" class="bgVideo" autoplay muted loop playsinline></video>
+  <div class="bgOverlay"></div>
+  <canvas id="fxCanvas"></canvas>
+
+  <header class="topBar">
+    <div class="titleCloud">
+      <div class="titleSparkles" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span>
+      </div>
+      <div class="titleCloudText">Soft alarms • YouTube • Pie Timer • Stopwatch</div>
+    </div>
+  </header>
+
+  <main class="layout" style="grid-template-columns: 1fr;">
+    <section class="card centerCard" style="max-width: 900px; margin: 0 auto;">
+      <h1 class="siteTitle" style="margin-top: 0;">About Cosmiclock</h1>
+
+      <p style="color: rgba(255,255,255,0.88); line-height: 1.6;">
+        This is a solopreneur developer project to help people wake up after having sleeping troubles,
+        incorporating solfeggio tones, activating chakras, and helping people with insomnia wake up gently,
+        plus supporting others with cortisol and theta-waves in the morning.
+      </p>
+
+      <p style="color: rgba(255,255,255,0.72); line-height: 1.6;">
+        Cosmiclock is designed to feel warm, calm, and simple: set an alarm, play a YouTube wake-up track,
+        and use the timers/stopwatch with soothing cosmic visuals.
+      </p>
+
+      <div class="row" style="justify-content:center; margin-top: 18px;">
+        <a class="navBtn" href="./index.html">← Back to Cosmiclock</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom nav/share panel -->
+  <section class="sitePanel" aria-label="Cosmiclock navigation and share">
+    <div class="navButtons">
+      <a class="navBtn" href="./index.html">Home</a>
+      <a class="navBtn" href="./about.html">About Us</a>
+      <a class="navBtn" href="./faq.html">FAQ</a>
+      <a class="navBtn" href="./contact.html">Contact</a>
+    </div>
+
+    <div class="shareRow" aria-label="Share Cosmiclock">
+      <a class="iconBtn" href="https://www.instagram.com/" target="_blank" rel="noopener" title="Instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm10 2H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3z"/></svg>
+      </a>
+
+      <a class="iconBtn" href="https://twitter.com/intent/tweet?text=www.cosmicclock.net%20%E2%80%94%20Ayo!%20Check%20this%20out&url=https%3A%2F%2Fwww.cosmicclock.net%2F"
+         target="_blank" rel="noopener" title="X">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.7l-5.2-6.7L5.3 22H2l7.3-8.4L1 2h6.9l4.7 6.1L18.9 2z"/></svg>
+      </a>
+
+      <a class="iconBtn" href="https://www.reddit.com/submit?url=https%3A%2F%2Fwww.cosmicclock.net%2F&title=www.cosmicclock.net%20%E2%80%94%20Ayo!%20Check%20this%20out"
+         target="_blank" rel="noopener" title="Reddit">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12.2c0-1.3-1-2.3-2.3-2.3-.6 0-1.1.2-1.5.6-1.5-1-3.5-1.6-5.7-1.7l1-4.5 3.1.7a1.6 1.6 0 1 0 .2-1l-3.8-.9a.9.9 0 0 0-1.1.7l-1.2 5.2c-2.3.1-4.4.7-6 1.7a2.1 2.1 0 0 0-1.5-.6C1 9.9 0 10.9 0 12.2c0 .9.5 1.7 1.2 2.1a4.7 4.7 0 0 0-.1 1c0 3 4.9 5.4 10.9 5.4s10.9-2.4 10.9-5.4c0-.3 0-.7-.1-1 .7-.4 1.2-1.2 1.2-2.1z"/></svg>
+      </a>
+
+      <a class="iconBtn" href="https://pinterest.com/pin/create/button/?url=https%3A%2F%2Fwww.cosmicclock.net%2F&description=www.cosmicclock.net%20%E2%80%94%20Ayo!%20Check%20this%20out"
+         target="_blank" rel="noopener" title="Pinterest">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.6 19.3 9.2 9.2 0 0 1 .1-2.2l1.2-5a3.6 3.6 0 0 1-.3-1.5c0-1.4.8-2.4 1.8-2.4.8 0 1.2.6 1.2 1.4 0 .8-.5 2.1-.8 3.3-.2 1 .4 1.8 1.4 1.8 1.7 0 2.9-2.2 2.9-4.9 0-2-1.4-3.5-3.9-3.5a4.4 4.4 0 0 0-4.6 4.4 3.2 3.2 0 0 0 .7 2.1.6.6 0 0 1 .2.7l-.2.9a.6.6 0 0 1-.9.4c-1-.4-1.6-1.8-1.6-3.2 0-2.4 2-6.2 7-6.2 3.7 0 6.2 2.7 6.2 5.7 0 3.9-2.2 6.7-5.4 6.7-1.1 0-2.1-.6-2.5-1.3l-.7 2.8a9.4 9.4 0 0 1-.9 2A10 10 0 1 0 12 2z"/></svg>
+      </a>
+
+      <a class="iconBtn" href="https://api.whatsapp.com/send?text=www.cosmicclock.net%20%E2%80%94%20Ayo!%20Check%20this%20out%20https%3A%2F%2Fwww.cosmicclock.net%2F"
+         target="_blank" rel="noopener" title="WhatsApp">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 2.6 17.9L2 22l4.2-1.1A11 11 0 0 0 20.5 3.5z"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <script>
+    // Keep same cosmic background selection as index (basic default)
+    (function(){
+      const v = document.getElementById("bgVideo");
+      if (!v) return;
+      v.src = "starfield-drift.mp4";
+      v.load();
+      const p = v.play();
+      if (p && p.catch) p.catch(()=>{});
+    })();
+  </script>
+</body>
+</html>
