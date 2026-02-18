@@ -1376,3 +1376,62 @@ body{
   padding-bottom: 64px;
 }
 
+/* ===== Sticky bottom button bar ===== */
+
+.bottomBar{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(12px);
+
+  border-top: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 -18px 50px rgba(0,0,0,0.55);
+
+  z-index: 9999;
+}
+
+/* Individual buttons */
+
+.barBtn{
+  padding: 8px 14px;
+  border-radius: 999px;
+
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.22);
+
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.barBtn:hover{
+  background: rgba(255,255,255,0.18);
+}
+
+.barBtn:active{
+  transform: translateY(1px);
+}
+
+/* Prevent page content being hidden behind bar */
+
+body{
+  padding-bottom: 64px;
+}
+
+
