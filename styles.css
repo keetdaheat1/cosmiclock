@@ -5,6 +5,9 @@
   --muted: rgba(255,255,255,0.68);
   --shadow: 0 18px 60px rgba(0,0,0,0.55);
   --uiScale: 1.06;
+  --glassA: rgba(0,0,0,0.30);   /* main glass for cards */
+  --glassB: rgba(0,0,0,0.30);   /* same for title cloud */
+  --glassBorder: rgba(255,255,255,0.16);
 }
 
 /* =========================
@@ -110,7 +113,6 @@ body{
   .alarmBtnRow{ flex-direction: column; }
 }
 
-
 *{ box-sizing: border-box; }
 html,body{ height:100%; }
 
@@ -134,8 +136,10 @@ body{
   filter: saturate(1.18) contrast(1.12) brightness(0.72);
   z-index: 0;
 }
+
+/* FIX #2: overlay should be FIXED so it behaves consistently across layout/scroll */
 .bgOverlay{
-  position: absolute;
+  position: fixed;              /* <-- was absolute */
   inset: 0;
   pointer-events: none;
   z-index: 1;
@@ -190,6 +194,10 @@ body{
   backdrop-filter: blur(12px);
   overflow: hidden;
   animation: cloudBreath 5.2s ease-in-out infinite;
+
+  background: var(--glassB);
+  border: 1px solid var(--glassBorder);
+  backdrop-filter: blur(12px);
 }
 @keyframes cloudBreath{
   0%   { transform: translateX(-50%) scale(1); }
@@ -297,10 +305,10 @@ body{
 .card{
   border-radius: 20px;
   padding: calc(14px * var(--uiScale));
-  background: rgba(0,0,0,0.30);
+  background: var(--glassA);
+  border: 1px solid var(--glassBorder);
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.16);
   position: relative;
 }
 .card::before{
@@ -318,7 +326,7 @@ body{
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events:none;
-  opacity: 0.94;
+  opacity: 0.70;
 }
 
 .panelTitle{
@@ -594,7 +602,6 @@ button:hover{ background: rgba(255,255,255,0.12); }
   justify-content: center;
 }
 
-
 /* Cosmic selector */
 .cosmicUnderVideo{
   margin-top: 10px;
@@ -725,7 +732,6 @@ button:hover{ background: rgba(255,255,255,0.12); }
   max-width: 460px;          /* bigger width */
   height: 280px;             /* deep tank */
 }
-
 
 .fillLiquid{
   position:absolute;
@@ -1421,6 +1427,10 @@ body{
   border-radius: 20px;
 
   box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+
+  /* FIX #1: ensure footer is above canvas/overlays visually and clickably */
+  position: relative;
+  z-index: 4;
 }
 
 /* Page buttons row */
@@ -1473,4 +1483,13 @@ body{
   width: 18px;
   height: 18px;
   fill: white;
+}
+
+/* EXTRA HARD FIX: make sure footer links always accept clicks */
+.siteFooter a,
+.footerNav a,
+.footerShare a,
+.footerBtn,
+.iconBtn{
+  pointer-events: auto;
 }
