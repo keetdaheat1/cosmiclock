@@ -134,7 +134,7 @@ body{
   z-index: 0;
 }
 .bgOverlay{
-  position: fixed;
+  position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 1;
