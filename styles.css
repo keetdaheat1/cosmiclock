@@ -1451,3 +1451,8 @@ body{
 .iconBtn{
   pointer-events: auto;
 }
+
+/* === KILL THE OLD FIXED BOTTOM DOCK (rectangle) === */
+.bottomBar{ display:none !important; }
+.barBtn{ display:none !important; }
+body{ padding-bottom: 0 !important; }
