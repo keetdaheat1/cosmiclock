@@ -1378,43 +1378,50 @@ body{
 /* ===== Sticky bottom button bar ===== */
 /* ===== TRUE FIXED BOTTOM DOCK ===== */
 
-/* ===== Bottom-of-page button bar (NOT fixed) ===== */
-
 .bottomBar{
-  margin: 18px auto 18px;
-  max-width: 1400px;
-  padding: 12px 12px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
 
+  height: 60px;                 /* fixed height — no stretching */
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
 
-  background: rgba(0,0,0,0.38);
-  backdrop-filter: blur(12px);
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(14px);
 
-  border: 1px solid rgba(255,255,255,0.16);
-  border-radius: 18px;
+  border-top: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 -16px 40px rgba(0,0,0,0.6);
 
-  box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+  z-index: 99999;
+
+  overflow: hidden;             /* prevents expansion */
 }
 
 /* Buttons */
 .barBtn{
   padding: 8px 14px;
   border-radius: 999px;
-  text-decoration: none;
 
   font-weight: 700;
   font-size: 13px;
-  color: rgba(255,255,255,0.95);
+  text-decoration: none;
+  color: white;
   white-space: nowrap;
 
   background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.22);
+  border: 1px solid rgba(255,255,255,0.25);
 
   transition: background 0.15s ease, transform 0.05s ease;
 }
-.barBtn:hover{ background: rgba(255,255,255,0.18); }
-.barBtn:active{ transform: translateY(1px); }
+
+.barBtn:hover{
+  background: rgba(255,255,255,0.2);
+}
+
+.barBtn:active{
+  transform: translateY(1px);
+}
