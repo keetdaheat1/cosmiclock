@@ -1,86 +1,60 @@
 <!doctype html>
 <html lang="en">
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Cosmiclock",
-  "url": "https://keetdaheat1.github.io/cosmiclock/",
-  "applicationCategory": "UtilitiesApplication",
-  "operatingSystem": "All",
-  "description": "A calming alarm clock with soft tones, YouTube wake-up videos, timers and stopwatch.",
-  "browserRequirements": "Requires JavaScript",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  }
-}
-</script>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
 <head>
-  <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Primary SEO -->
   <title>Cosmiclock — Online Alarm Clock</title>
   <meta name="description"
-        content="Cosmiclock is a calming online alarm clock with gentle sounds, YouTube wake-up videos, pie timer, water fill timer, stopwatch, and cosmic visuals." />
-
+        content="Cosmiclock is a calming online alarm clock with gentle sounds, YouTube wake-up videos, timers, stopwatch, and cosmic visuals." />
   <meta name="keywords"
-        content="online alarm clock, gentle alarm, wake up music, youtube alarm, soft alarm, timer, stopwatch, meditation alarm, morning alarm" />
-
+        content="online alarm clock, gentle alarm, youtube alarm, timer, stopwatch, meditation alarm, morning alarm" />
   <meta name="author" content="Cosmiclock" />
+  <meta name="theme-color" content="#1a0f2e" />
+  <meta name="robots" content="index, follow" />
 
-  <!-- Canonical URL (IMPORTANT) -->
   <link rel="canonical" href="https://keetdaheat1.github.io/cosmiclock/" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="styles.css?v=2" />
 
-  <!-- Open Graph (for Discord, Facebook, etc.) -->
+  <!-- Open Graph -->
   <meta property="og:title" content="Cosmiclock — Gentle Alarm Clock & YouTube Wake-Up Player" />
   <meta property="og:description"
         content="A calming alarm clock with soft tones, YouTube wake-up videos, pie timer, water fill timer and cosmic visuals." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://keetdaheat1.github.io/cosmiclock/" />
-  <meta property="og:image" content="https://keetdaheat1.github.io/cosmiclock/" />
+  <meta property="og:image" content="https://keetdaheat1.github.io/cosmiclock/preview.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Cosmicclock — Gentle Alarm Clock & YouTube Wake-Up Player" />
   <meta name="twitter:description"
         content="Soft alarms, wake-up music, timers, stopwatch, and cosmic visuals." />
-  <meta name="twitter:image" content="https://YOUR-LIVE-URL/preview.png" />
+  <meta name="twitter:image" content="https://keetdaheat1.github.io/cosmiclock/preview.png" />
 
-  <!-- Theme color (mobile browsers) -->
-  <meta name="theme-color" content="#1a0f2e" />
-
-  <!-- Robots -->
-  <meta name="robots" content="index, follow" />
-
-  <link rel="stylesheet" href="styles.css?v=2"/>
-  <link rel="icon" href="favicon.ico" />
-  <title>Cosmiclock</title>
-  <h1 class="siteTitle">Cosmiclock — Gentle Online Alarm Clock</h1>
-
-  <meta charset="UTF-8"/>
-  <meta name="description" content="Cosmiclock — a calming alarm, YouTube wake-up player, pie timer, water fill timer, and stopwatch with golden cosmic visuals." />
-  <link rel="canonical" href="https://keetdaheat1.github.io/cosmiclock//" />
-  <meta property="og:title" content="Cosmiclock" />
-  <meta property="og:description" content="Soft alarm + YouTube wake-up + pie timer + stopwatch — soothing cosmic visuals." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://keetdaheat1.github.io/cosmiclock/" />
-
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-  <link rel="stylesheet" href="styles.css"/>
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Cosmiclock",
+    "url": "https://keetdaheat1.github.io/cosmiclock/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "All",
+    "description": "A calming alarm clock with soft tones, YouTube wake-up videos, timers and stopwatch.",
+    "browserRequirements": "Requires JavaScript",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
 </head>
 
 <body>
   <video id="bgVideo" class="bgVideo" autoplay muted loop playsinline></video>
-
   <div class="bgOverlay"></div>
   <canvas id="fxCanvas"></canvas>
 
@@ -100,7 +74,6 @@
     <aside class="side card leftSide alarmCard">
       <div class="panelTitle alarmTitle">Alarm</div>
 
-      <!-- Alarm block now contains volume INSIDE the same block -->
       <div class="alarmRowTop">
         <div class="alarmControls">
           <div class="row wrap tightRow">
@@ -129,7 +102,6 @@
           </div>
         </div>
 
-        <!-- Volume now inside same alarm block -->
         <div class="alarmVolInline">
           <div class="alarmVolLabel">Alarm volume</div>
           <div class="alarmVolSliderRow">
@@ -300,13 +272,18 @@
               </label>
               <label class="miniLbl">
                 Ms
-                <input id="alarmMs" class="miniNumMs" type="number" min="0" max="999" step="" value="0">
+                <input id="alarmMs" class="miniNumMs" type="number" min="0" max="999" step="1" value="0">
               </label>
             </div>
 
             <label class="alarmCenterToggle">
               <input id="alarmEnabledCenter" type="checkbox" />
               <span>Enable</span>
+            </label>
+
+            <label class="alarmCenterToggle" title="If enabled, plays a Big Bang hit 3 minutes after the alarm starts (only if still ringing)">
+              <input id="bigBangAfter3" type="checkbox" />
+              <span>Big Bang +3m</span>
             </label>
 
             <div id="alarmCenterValue" class="alarmCenterValue">--:--:--:---</div>
@@ -338,7 +315,6 @@
         <button id="timerReset">Reset</button>
       </div>
 
-      <!-- Bigger pie -->
       <div class="pieArea bigPie">
         <svg viewBox="0 0 300 300" class="pieSvg" aria-label="timer progress">
           <circle class="pieBg" cx="150" cy="150" r="118"></circle>
@@ -352,7 +328,6 @@
 
       <div class="panelTitle waterTitle">Water container</div>
 
-      <!-- Bigger tank -->
       <div class="fillTank bigTank" aria-label="timer fill tank">
         <div class="fillLiquid" id="fillLiquid">
           <div class="fillSparkles"></div>
@@ -362,18 +337,14 @@
     </aside>
   </main>
 
-  <!-- FIX #1: Proper footer wrapper so links render and click correctly -->
   <footer class="siteFooter" aria-label="Site links and sharing">
-    <!-- Page links -->
     <div class="footerNav">
       <a class="footerBtn" href="./about.html">About Us</a>
       <a class="footerBtn" href="./faq.html">FAQ</a>
       <a class="footerBtn" href="./contact.html">Contact</a>
     </div>
 
-    <!-- Social share buttons -->
     <div class="footerShare">
-      <!-- Facebook -->
       <a class="iconBtn"
          href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.cosmiclock.net%2F"
          target="_blank" rel="noopener" title="Share on Facebook">
@@ -382,16 +353,14 @@
         </svg>
       </a>
 
-      <!-- X -->
       <a class="iconBtn"
-         href="https://twitter.com/intent/tweet?text=www.cosmiclock.net%20%E2%80%94%20Ayo!%20Check%20this%20out&url=https%3A%2F%2Fwww.cosmicclock.net%2F"
+         href="https://twitter.com/intent/tweet?text=www.cosmicclock.net%20%E2%80%94%20Ayo!%20Check%20this%20out&url=https%3A%2F%2Fwww.cosmicclock.net%2F"
          target="_blank" rel="noopener" title="Share on X">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M18.9 2H22l-6.8 7.8L23 22h-6.7l-5.2-6.7L5.3 22H2l7.3-8.4L1 2h6.9l4.7 6.1L18.9 2z"/>
         </svg>
       </a>
 
-      <!-- Pinterest -->
       <a class="iconBtn"
          href="https://pinterest.com/pin/create/button/?url=https%3A%2F%2Fwww.cosmicclock.net%2F&description=www.cosmicclock.net%20%E2%80%94%20Ayo!%20Check%20this%20out"
          target="_blank" rel="noopener" title="Share on Pinterest">
@@ -400,7 +369,6 @@
         </svg>
       </a>
 
-      <!-- Reddit -->
       <a class="iconBtn"
          href="https://www.reddit.com/submit?url=https%3A%2F%2Fwww.cosmicclock.net%2F&title=www.cosmicclock.net%20%E2%80%94%20Ayo!%20Check%20this%20out"
          target="_blank" rel="noopener" title="Share on Reddit">

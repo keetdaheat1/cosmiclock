@@ -1,3 +1,8 @@
+/* =========================
+   Cosmiclock — app.js
+   Big Bang +3m included
+   ========================= */
+
 const $ = (id) => document.getElementById(id);
 const STORE_KEY = "sns_softnstreamalarm_final_live_v6";
 
@@ -25,7 +30,7 @@ function parseMMSS(text){
   return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
 }
 
-// Alarm time steppers (iPad-safe)
+/* ---------- Alarm time steppers (iPad-safe) ---------- */
 document.addEventListener("click", (e) => {
   const btn = e.target.closest(".stepBtn");
   if (!btn) return;
@@ -37,7 +42,7 @@ document.addEventListener("click", (e) => {
 
   const min = input.min === "" ? -Infinity : Number(input.min);
   const max = input.max === "" ?  Infinity : Number(input.max);
-  const step = input.step === "" ? 1 : Number(input.step);
+  const step = input.step === "" ? 1 : Number(input.step || 1);
 
   let val = input.value === "" ? 0 : Number(input.value);
   val = dir === "up" ? val + step : val - step;
@@ -46,12 +51,9 @@ document.addEventListener("click", (e) => {
   if (val > max) val = max;
 
   input.value = String(val);
-
-  // Trigger any listeners already in your app that depend on input changes:
   input.dispatchEvent(new Event("input", { bubbles: true }));
   input.dispatchEvent(new Event("change", { bubbles: true }));
 });
-
 
 /* ---------- Alarm display HH:MM:SS:MMM ---------- */
 function formatAlarmFromInputs(){
@@ -78,6 +80,7 @@ function saveState(state){
 }
 function snapshotState(){
   return {
+    bigBangAfter3: $("bigBangAfter3") ? $("bigBangAfter3").checked : false,
     cosmic: $("cosmicSelect").value,
 
     alarmEnabled: $("alarmEnabled").checked,
@@ -99,9 +102,13 @@ function snapshotState(){
   };
 }
 
-const DEFAULT_PRESET_URL = "https://www.youtube.com/watch?v=IvfolR9QOEc"; // preloaded
+const DEFAULT_PRESET_URL = "https://www.youtube.com/watch?v=IvfolR9QOEc";
 
 function applyState(st){
+  if ($("bigBangAfter3") && typeof st.bigBangAfter3 === "boolean") {
+    $("bigBangAfter3").checked = st.bigBangAfter3;
+  }
+
   const allowedCosmic = new Set([
     "starfield-drift.mp4",
     "nebula-glow.mp4",
@@ -109,7 +116,6 @@ function applyState(st){
     "space-warp.mp4",
     "aurora-space.mp4",
   ]);
-
   if (st.cosmic && allowedCosmic.has(st.cosmic)) $("cosmicSelect").value = st.cosmic;
 
   if (typeof st.alarmEnabled === "boolean") $("alarmEnabled").checked = st.alarmEnabled;
@@ -468,7 +474,111 @@ function playToneProfile(profile){
   scheduleBlock(tNow);
 }
 
-/* ---------- FX Canvas: no themes, idle + alarm “ALL effects” ---------- */
+/* =========================================================
+   BIG BANG +3m (NEW)
+   - scheduled when alarm triggers if checkbox enabled
+   - cancelled on stop/sleep
+   - plays impact + bass + flash + extra burst
+   ========================================================= */
+let bigBangTimeout = null;
+let bigBangFired = false;
+
+function cancelBigBang(){
+  if (bigBangTimeout) clearTimeout(bigBangTimeout);
+  bigBangTimeout = null;
+  bigBangFired = false;
+  document.body.classList.remove("bigbang");
+}
+
+function triggerBigBangNow(){
+  if (bigBangFired) return;
+  bigBangFired = true;
+
+  // Only if we’re still ringing / playing
+  if (!alarmPlaying || !document.body.classList.contains("alarm-ringing")) return;
+
+  ensureAudio();
+
+  // Visual flash + particles
+  document.body.classList.add("bigbang");
+  setTimeout(() => document.body.classList.remove("bigbang"), 650);
+
+  fxBoost = 1.0;
+  spawnAlarmBurst();
+  spawnAlarmBurst(); // double burst feels more “impact”
+  spawnAlarmBurst();
+
+  // Audio “impact”
+  const t0 = audioCtx.currentTime;
+  const uiV = clampInt($("alarmVol").value, 0, 100, 80);
+  const base = alarmUISliderToGain(uiV);
+
+  // Dedicated bang bus so we don’t destroy current alarm synth mix
+  const bangGain = audioCtx.createGain();
+  bangGain.gain.setValueAtTime(Math.max(0.0001, base * 1.15), t0);
+  bangGain.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.4);
+  bangGain.connect(alarmGain);
+  activeNodes.push(bangGain);
+
+  // Sub-bass drop
+  const sub = audioCtx.createOscillator();
+  sub.type = "sine";
+  sub.frequency.setValueAtTime(72, t0);
+  sub.frequency.exponentialRampToValueAtTime(24, t0 + 0.55);
+
+  const subG = audioCtx.createGain();
+  subG.gain.setValueAtTime(0.0001, t0);
+  subG.gain.exponentialRampToValueAtTime(base * 0.95, t0 + 0.03);
+  subG.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.85);
+
+  sub.connect(subG).connect(bangGain);
+  sub.start(t0);
+  sub.stop(t0 + 0.95);
+  activeNodes.push(sub, subG);
+
+  // Crack / impact noise
+  const dur = 0.38;
+  const bufferSize = Math.floor(audioCtx.sampleRate * dur);
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i=0;i<bufferSize;i++){
+    // sharper at start
+    const env = Math.pow(1 - i / bufferSize, 2.2);
+    data[i] = (Math.random()*2 - 1) * env;
+  }
+  const src = audioCtx.createBufferSource();
+  src.buffer = buffer;
+
+  const hp = audioCtx.createBiquadFilter();
+  hp.type = "highpass";
+  hp.frequency.setValueAtTime(420, t0);
+
+  const lp = audioCtx.createBiquadFilter();
+  lp.type = "lowpass";
+  lp.frequency.setValueAtTime(4200, t0);
+
+  const nG = audioCtx.createGain();
+  nG.gain.setValueAtTime(0.0001, t0);
+  nG.gain.exponentialRampToValueAtTime(base * 0.75, t0 + 0.01);
+  nG.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.40);
+
+  src.connect(hp).connect(lp).connect(nG).connect(bangGain);
+  src.start(t0);
+  src.stop(t0 + dur + 0.05);
+  activeNodes.push(src, hp, lp, nG);
+}
+
+function scheduleBigBangIfEnabled(){
+  cancelBigBang();
+  if (!$("bigBangAfter3") || !$("bigBangAfter3").checked) return;
+
+  // schedule for +180s after alarm begins
+  bigBangTimeout = setTimeout(() => {
+    triggerBigBangNow();
+  }, 180000);
+}
+
+/* ---------- FX Canvas: idle + alarm “ALL effects” ---------- */
 const canvas = $("fxCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -478,7 +588,7 @@ let streaks = [];
 let comets = [];
 let bursts = [];
 let fxBoost = 0;
-let fxAllMode = false; // toggled ON during alarm
+let fxAllMode = false;
 
 function resizeCanvas(){
   canvas.width = Math.floor(window.innerWidth * devicePixelRatio);
@@ -748,13 +858,11 @@ function renderFx(ts){
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0,0,W,H);
 
-  // Idle: subtle nebula + stars
   const idleAlpha = 0.70;
   drawStars(t, idleAlpha);
   vignettePulse(t, idleAlpha);
   nebulaCloud(t, 0.55);
 
-  // Alarm: ALL effects layered hard
   if (fxAllMode){
     drawStars(t, 1.0);
     vignettePulse(t, 1.0);
@@ -880,10 +988,13 @@ function stopRingingUX(){
   if (btn) btn.classList.remove("show");
 }
 
-$("sleepBtn").addEventListener("click", () => {
+function stopAlarmEverywhere(){
+  cancelBigBang();
   stopSound();
   stopRingingUX();
-});
+}
+
+$("sleepBtn").addEventListener("click", stopAlarmEverywhere);
 
 /* ---------- Alarm trigger + scheduled alarm ---------- */
 function getAlarmTargetFromInputs(){
@@ -899,9 +1010,13 @@ function triggerAlarm({ autoplayVideo=true } = {}){
   if (!$("alarmEnabled").checked) return;
   ensureAudio();
 
+  cancelBigBang();              // reset previous
   spawnAlarmBurst();
   startRingingUX();
   playToneProfile($("alarmSound").value);
+
+  // schedule Big Bang +3m if enabled
+  scheduleBigBangIfEnabled();
 
   const url = $("ytUrl").value;
   if (url && url.trim()){
@@ -910,7 +1025,7 @@ function triggerAlarm({ autoplayVideo=true } = {}){
 }
 
 $("testAlarm").addEventListener("click", () => triggerAlarm({ autoplayVideo: false }));
-$("stopAlarm").addEventListener("click", () => { stopSound(); stopRingingUX(); });
+$("stopAlarm").addEventListener("click", stopAlarmEverywhere);
 
 let scheduledToken = null;
 function checkScheduledAlarm(){
@@ -1116,6 +1231,7 @@ renderStopwatch();
 
 /* ---------- Save on input ---------- */
 [
+  "bigBangAfter3",
   "cosmicSelect",
   "alarmEnabled","alarmSound","alarmHour","alarmMin","alarmSec","alarmMs","alarmVol",
   "ytUrl","preset","ytVol",
@@ -1126,16 +1242,6 @@ renderStopwatch();
   if (!el) return;
   el.addEventListener("input", () => saveState(snapshotState()));
 });
-
-/* ---------- YouTube + Alarm UI ---------- */
-function syncYTVolumeUI(){
-  const v = clampInt($("ytVol").value, 0, 100, 70);
-  $("ytVolPct").textContent = `${v}%`;
-  if (ytPlayer && typeof ytPlayer.setVolume === "function"){
-    try{ ytPlayer.setVolume(v); }catch{}
-  }
-}
-$("ytVol").addEventListener("input", () => { syncYTVolumeUI(); saveState(snapshotState()); });
 
 /* ---------- Final UI sync ---------- */
 syncAlarmVolumeUI();

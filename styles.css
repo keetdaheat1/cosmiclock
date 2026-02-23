@@ -646,6 +646,7 @@ button:hover{ background: rgba(255,255,255,0.12); }
 .miniNum{ width: 82px; }
 .miniNumMs{ width: 104px; }
 .alarmCenterToggle{
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -1456,3 +1457,42 @@ body{
 .bottomBar{ display:none !important; }
 .barBtn{ display:none !important; }
 body{ padding-bottom: 5px !important; }
+
+/* =========================================
+   BIG BANG flash + punch (NEW)
+   ========================================= */
+
+body.bigbang::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 650px at 50% 42%,
+      rgba(255,255,255,0.82),
+      rgba(255,206,105,0.28) 35%,
+      rgba(175,110,255,0.18) 58%,
+      rgba(0,0,0,0.0) 76%);
+  opacity: 0;
+  animation: bigbangFlash 650ms ease-out forwards;
+}
+
+@keyframes bigbangFlash{
+  0%   { opacity: 0; transform: scale(0.985); }
+  14%  { opacity: 1; transform: scale(1.02); }
+  55%  { opacity: 0.35; transform: scale(1.01); }
+  100% { opacity: 0; transform: scale(1.00); }
+}
+
+/* Tiny “impact” feel on cards */
+body.bigbang .card{
+  animation: bigbangPunch 420ms ease-out;
+}
+
+@keyframes bigbangPunch{
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  18%  { transform: translate3d(0,-2px,0) scale(1.012); }
+  48%  { transform: translate3d(0,1px,0) scale(1.006); }
+  100% { transform: translate3d(0,0,0) scale(1); }
+}
