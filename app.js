@@ -1,16 +1,20 @@
 /* =========================
-   Cosmiclock — app.js (FULL) v8
-   FIXES:
-   - Sleep is a TRUE latch toggle (no 30s snooze)
-   - Big Bang +3m uses alarmActive state (not CSS) and is reliable
-   - Extra Big Bang FX: explosions + stars + confetti + shockwaves + terminator iris blast
-   - Cache-bust recommended in index.html: app.js?v=8
+   Cosmiclock — app.js (FULL)
+   - Alarm effects continue until Sleep/Stop pressed (no 30s timeout)
+   - Big Bang +3m is reliable (due-time + polling + visibility catch-up)
+   - Big Bang adds: explosions + star burst + confetti + shockwaves
+   - Terminator-style: screen warps → fades to black → white dot → BOOM flash
    ========================= */
 
 const $ = (id) => document.getElementById(id);
-const STORE_KEY = "sns_softnstreamalarm_final_live_v8";
+const STORE_KEY = "sns_softnstreamalarm_final_live_v7";
 
 /* ---------- Helpers ---------- */
+function must(id){
+  const el = document.getElementById(id);
+  if (!el) console.warn("Missing element:", id);
+  return el;
+}
 function pad2(n){ return String(n).padStart(2, "0"); }
 function pad3(n){ return String(n).padStart(3, "0"); }
 function clampInt(v, min, max, fallback){
@@ -29,7 +33,45 @@ function parseMMSS(text){
   return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
 }
 
-/* ---------- State persistence ---------- */
+/* ---------- Alarm time steppers (optional; iPad-safe) ---------- */
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".stepBtn");
+  if (!btn) return;
+
+  const id = btn.dataset.target;
+  const dir = btn.dataset.step; // "up" or "down"
+  const input = document.getElementById(id);
+  if (!input) return;
+
+  const min = input.min === "" ? -Infinity : Number(input.min);
+  const max = input.max === "" ?  Infinity : Number(input.max);
+  const step = input.step === "" ? 1 : Number(input.step || 1);
+
+  let val = input.value === "" ? 0 : Number(input.value);
+  val = dir === "up" ? val + step : val - step;
+
+  if (val < min) val = min;
+  if (val > max) val = max;
+
+  input.value = String(val);
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  input.dispatchEvent(new Event("change", { bubbles: true }));
+});
+
+/* ---------- Alarm display HH:MM:SS:MMM ---------- */
+function formatAlarmFromInputs(){
+  const h  = clampInt($("alarmHour").value, 0, 23, 7);
+  const m  = clampInt($("alarmMin").value,  0, 59, 30);
+  const s  = clampInt($("alarmSec").value,  0, 59, 0);
+  const ms = clampInt($("alarmMs").value,   0, 999, 0);
+  return `${pad2(h)}:${pad2(m)}:${pad2(s)}:${pad3(ms)}`;
+}
+function renderAlarmCenter(){
+  const el = $("alarmCenterValue");
+  if (el) el.textContent = formatAlarmFromInputs();
+}
+
+/* ---------- State ---------- */
 function loadState(){
   try{
     const raw = localStorage.getItem(STORE_KEY);
@@ -62,6 +104,9 @@ function snapshotState(){
     swAlarmOn: $("swAlarmOn")?.checked ?? true
   };
 }
+
+const DEFAULT_PRESET_URL = "https://www.youtube.com/watch?v=IvfolR9QOEc";
+
 function applyState(st){
   if ($("bigBangAfter3") && typeof st.bigBangAfter3 === "boolean") $("bigBangAfter3").checked = st.bigBangAfter3;
 
@@ -94,20 +139,95 @@ function applyState(st){
 }
 applyState(loadState());
 
-/* ---------- Alarm display HH:MM:SS:MMM ---------- */
-function formatAlarmFromInputs(){
-  const h  = clampInt($("alarmHour").value, 0, 23, 7);
-  const m  = clampInt($("alarmMin").value,  0, 59, 30);
-  const s  = clampInt($("alarmSec").value,  0, 59, 0);
-  const ms = clampInt($("alarmMs").value,   0, 999, 0);
-  return `${pad2(h)}:${pad2(m)}:${pad2(s)}:${pad3(ms)}`;
+/* Preload preset if empty */
+if ($("ytUrl") && (!$("ytUrl").value || !$("ytUrl").value.trim())){
+  $("ytUrl").value = DEFAULT_PRESET_URL;
 }
-function renderAlarmCenter(){
-  const el = $("alarmCenterValue");
-  if (el) el.textContent = formatAlarmFromInputs();
+if ($("preset")) $("preset").value = DEFAULT_PRESET_URL;
+
+/* Sync middle enable toggle with left enable */
+const centerToggle = $("alarmEnabledCenter");
+if (centerToggle && $("alarmEnabled")){
+  centerToggle.checked = $("alarmEnabled").checked;
+  centerToggle.addEventListener("change", () => {
+    $("alarmEnabled").checked = centerToggle.checked;
+    saveState(snapshotState());
+  });
+  $("alarmEnabled").addEventListener("change", () => {
+    centerToggle.checked = $("alarmEnabled").checked;
+    saveState(snapshotState());
+  });
 }
 
-/* ---------- Clock (digital) ---------- */
+/* ---------- Analog clock ticks ---------- */
+function buildClockTicks(){
+  const g = $("clockTicks");
+  if (!g) return;
+  g.innerHTML = "";
+
+  const cx = 120, cy = 120;
+  const rOuter = 96;
+  for (let i=0;i<60;i++){
+    const a = (i / 60) * Math.PI * 2;
+    const isMajor = (i % 5 === 0);
+
+    const len = isMajor ? 12 : 6;
+    const r1 = rOuter - len;
+    const r2 = rOuter;
+
+    const x1 = cx + Math.sin(a) * r1;
+    const y1 = cy - Math.cos(a) * r1;
+    const x2 = cx + Math.sin(a) * r2;
+    const y2 = cy - Math.cos(a) * r2;
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", x1.toFixed(2));
+    line.setAttribute("y1", y1.toFixed(2));
+    line.setAttribute("x2", x2.toFixed(2));
+    line.setAttribute("y2", y2.toFixed(2));
+    line.setAttribute("class", isMajor ? "tickMajor" : "tickMinor");
+    g.appendChild(line);
+  }
+}
+buildClockTicks();
+
+function setHandRotation(el, deg){
+  if (!el) return;
+  el.style.transform = `rotate(${deg}deg)`;
+}
+function updateAnalogClock(now){
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const s = now.getSeconds();
+  const ms = now.getMilliseconds();
+
+  const hourDeg = ((h % 12) + m/60 + s/3600 + ms/3600000) * 30;
+  const minDeg  = (m + s/60 + ms/60000) * 6;
+  const secDeg  = (s + ms/1000) * 6;
+  const msDeg   = (ms / 1000) * 360;
+
+  setHandRotation($("handHour"), hourDeg);
+  setHandRotation($("handMin"),  minDeg);
+  setHandRotation($("handSec"),  secDeg);
+  setHandRotation($("handMs"),   msDeg);
+
+  const ah  = clampInt($("alarmHour")?.value, 0, 23, 7);
+  const am  = clampInt($("alarmMin")?.value,  0, 59, 30);
+  const as  = clampInt($("alarmSec")?.value,  0, 59, 0);
+  const ams = clampInt($("alarmMs")?.value,   0, 999, 0);
+
+  const aHourDeg = ((ah % 12) + am/60 + as/3600 + ams/3600000) * 30;
+  const aMinDeg  = (am + as/60 + ams/60000) * 6;
+  const aSecDeg  = (as + ams/1000) * 6;
+  const aMsDeg   = (ams / 1000) * 360;
+
+  setHandRotation($("aHandHour"), aHourDeg);
+  setHandRotation($("aHandMin"),  aMinDeg);
+  setHandRotation($("aHandSec"),  aSecDeg);
+  setHandRotation($("aHandMs"),   aMsDeg);
+}
+
+/* ---------- Digital Clock ---------- */
 function tickClock(){
   const now = new Date();
   if ($("clockTime")){
@@ -119,6 +239,7 @@ function tickClock(){
     $("clockDate").textContent = now.toLocaleDateString(undefined, opts);
   }
   renderAlarmCenter();
+  updateAnalogClock(now);
 }
 setInterval(tickClock, 33);
 tickClock();
@@ -129,7 +250,7 @@ tickClock();
 });
 renderAlarmCenter();
 
-/* ---------- Cosmic background ---------- */
+/* ---------- Cosmic mp4 background selector ---------- */
 function setCosmicVideo(filename){
   const v = $("bgVideo");
   if (!v) return;
@@ -146,12 +267,10 @@ if ($("cosmicSelect")){
   setCosmicVideo($("cosmicSelect").value);
 }
 
-/* ---------- WebAudio ---------- */
+/* ---------- WebAudio: alarm volume ---------- */
 let audioCtx = null;
 let masterGain = null;
 let alarmGain = null;
-let activeNodes = [];
-let alarmPlaying = false;
 
 function uiCurve(x01){ return Math.pow(Math.max(0, Math.min(1, x01)), 1.55); }
 function alarmUISliderToGain(vPct){
@@ -182,6 +301,10 @@ if ($("alarmVol")){
 }
 syncAlarmVolumeUI();
 
+/* ---------- Alarm synth ---------- */
+let activeNodes = [];
+let alarmPlaying = false;
+
 function stopSound(){
   alarmPlaying = false;
   for (const n of activeNodes){
@@ -190,6 +313,7 @@ function stopSound(){
   }
   activeNodes = [];
 }
+
 function playToneProfile(profile){
   ensureAudio();
   stopSound();
@@ -203,6 +327,44 @@ function playToneProfile(profile){
   alarmGain.gain.setValueAtTime(Math.max(0.0001, base * 0.18), tNow);
   alarmGain.gain.exponentialRampToValueAtTime(base, tNow + 0.18);
 
+  const delay = audioCtx.createDelay(0.8);
+  delay.delayTime.value = 0.20;
+  const fb = audioCtx.createGain();
+  fb.gain.value = 0.18;
+  const wet = audioCtx.createGain();
+  wet.gain.value = 0.34;
+  delay.connect(fb).connect(delay);
+  delay.connect(wet).connect(alarmGain);
+
+  const chorusDelay = audioCtx.createDelay(0.05);
+  chorusDelay.delayTime.value = 0.012;
+  const chorusWet = audioCtx.createGain();
+  chorusWet.gain.value = 0.24;
+
+  const lfo = audioCtx.createOscillator();
+  lfo.type = "sine";
+  lfo.frequency.value = 0.28;
+  const lfoGain = audioCtx.createGain();
+  lfoGain.gain.value = 0.006;
+  lfo.connect(lfoGain).connect(chorusDelay.delayTime);
+  lfo.start();
+
+  chorusDelay.connect(chorusWet).connect(alarmGain);
+  activeNodes.push(delay, fb, wet, chorusDelay, chorusWet, lfo, lfoGain);
+
+  const sendToDelay = (node, amount=0.14) => {
+    const s = audioCtx.createGain();
+    s.gain.value = amount;
+    node.connect(s).connect(delay);
+    activeNodes.push(s);
+  };
+  const sendToChorus = (node, amount=0.14) => {
+    const s = audioCtx.createGain();
+    s.gain.value = amount;
+    node.connect(s).connect(chorusDelay);
+    activeNodes.push(s);
+  };
+
   const mkOsc = (type, freq, start, dur, gain, detune=0) => {
     const o = audioCtx.createOscillator();
     const g = audioCtx.createGain();
@@ -215,6 +377,9 @@ function playToneProfile(profile){
     g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
 
     o.connect(g).connect(alarmGain);
+    sendToDelay(g, 0.14);
+    sendToChorus(g, 0.14);
+
     o.start(start);
     o.stop(start + dur + 0.05);
     activeNodes.push(o, g);
@@ -239,6 +404,8 @@ function playToneProfile(profile){
     g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
 
     src.connect(filter).connect(g).connect(alarmGain);
+    sendToDelay(g, 0.10);
+
     src.start(start);
     src.stop(start + dur + 0.05);
 
@@ -289,18 +456,21 @@ function playToneProfile(profile){
 }
 
 /* =========================================================
-   FX canvas
+   FX Canvas (idle + alarm + big bang)
    ========================================================= */
 const canvas = $("fxCanvas");
 const ctx = canvas?.getContext("2d");
 
 let fxStart = performance.now();
 let stars = [];
+let streaks = [];
+let comets = [];
 let bursts = [];
 let shockwaves = [];
 let starExplosions = [];
 let confetti = [];
 let fxBoost = 0;
+let fxAllMode = false;
 let bigBangBoost = 0;
 
 function resizeCanvas(){
@@ -315,7 +485,7 @@ function initFx(){
   if (!canvas || !ctx) return;
   const W = canvas.width, H = canvas.height;
 
-  const starCount = Math.min(6500, Math.floor((W*H)/(140000)));
+  const starCount = Math.min(5600, Math.floor((W*H)/(150000)));
   stars = [];
   for (let i=0;i<starCount;i++){
     stars.push({
@@ -326,6 +496,32 @@ function initFx(){
       tw: Math.random()*3.0 + 0.6
     });
   }
+
+  const streakCount = Math.min(560, Math.floor((W*H)/(1200000)));
+  streaks = [];
+  for (let i=0;i<streakCount;i++){
+    streaks.push({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      len: (Math.random()*260 + 90) * devicePixelRatio,
+      sp: (Math.random()*1200 + 520) * devicePixelRatio,
+      a: Math.random()*0.42 + 0.10
+    });
+  }
+
+  const cometCount = Math.min(110, Math.floor((W*H)/(3200000)));
+  comets = [];
+  for (let i=0;i<cometCount;i++){
+    comets.push({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      vx: (Math.random()*0.9 + 0.25) * devicePixelRatio,
+      vy: (Math.random()*2.4 + 0.8) * devicePixelRatio,
+      len: (Math.random()*280 + 140) * devicePixelRatio,
+      a: Math.random()*0.50 + 0.10
+    });
+  }
+
   bursts = [];
   shockwaves = [];
   starExplosions = [];
@@ -353,6 +549,7 @@ function spawnAlarmBurst(mult=1){
     });
   }
 }
+
 function spawnShockwaves(){
   if (!canvas) return;
   const W = canvas.width, H = canvas.height;
@@ -361,6 +558,7 @@ function spawnShockwaves(){
   shockwaves.push({ x: cx, y: cy, r: 0, v: 16*devicePixelRatio, life: 1.0 });
   shockwaves.push({ x: cx, y: cy, r: 0, v: 11*devicePixelRatio, life: 1.0 });
 }
+
 function spawnStarExplosion(mult=1){
   if (!canvas) return;
   const W = canvas.width;
@@ -379,10 +577,11 @@ function spawnStarExplosion(mult=1){
     });
   }
 }
+
 function spawnConfetti(mult=1){
   if (!canvas) return;
   const W = canvas.width;
-  const count = Math.floor(300 * mult);
+  const count = Math.floor(260 * mult);
 
   for (let i=0;i<count;i++){
     confetti.push({
@@ -399,13 +598,84 @@ function spawnConfetti(mult=1){
   }
 }
 
-function drawStars(t, alphaMul){
+function nebulaCloud(t, alphaMul){
   if (!canvas) return;
   const W = canvas.width, H = canvas.height;
   ctx.globalCompositeOperation = "screen";
+  ctx.globalAlpha = (0.52 + fxBoost*0.20 + bigBangBoost*0.25) * alphaMul;
+
+  const cx = W*(0.5 + 0.06*Math.sin(t*0.22));
+  const cy = H*(0.35 + 0.06*Math.cos(t*0.18));
+  const r = Math.max(W,H)*0.70;
+
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+  g.addColorStop(0.00, "rgba(175,110,255,0.30)");
+  g.addColorStop(0.32, "rgba(255,206,105,0.18)");
+  g.addColorStop(0.58, "rgba(120,70,200,0.16)");
+  g.addColorStop(1.00, "rgba(0,0,0,0.00)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,W,H);
+
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+}
+
+function aurora(t, alphaMul){
+  if (!canvas) return;
+  const W = canvas.width, H = canvas.height;
+  ctx.globalCompositeOperation = "screen";
+  for (let i=0;i<3;i++){
+    const y0 = H*(0.14 + i*0.16);
+    const amp = (105 + i*34) * devicePixelRatio * (1.0 + fxBoost*0.30 + bigBangBoost*0.55);
+    const speed = (0.9 + i*0.28) * (1.0 + bigBangBoost*0.55);
+
+    const grad = ctx.createLinearGradient(0, y0-amp, 0, y0+amp);
+    grad.addColorStop(0, "rgba(175,110,255,0.0)");
+    grad.addColorStop(0.25, "rgba(175,110,255,0.55)");
+    grad.addColorStop(0.58, "rgba(255,206,105,0.44)");
+    grad.addColorStop(1, "rgba(175,110,255,0.0)");
+    ctx.fillStyle = grad;
+
+    ctx.globalAlpha = (0.48 + fxBoost*0.18 + bigBangBoost*0.25) * alphaMul;
+    ctx.beginPath();
+    ctx.moveTo(0, y0);
+    for (let x=0; x<=W; x += W/26){
+      const yy = y0 + Math.sin((x/W)*Math.PI*2 + t*speed) * amp;
+      ctx.lineTo(x, yy);
+    }
+    ctx.lineTo(W, y0 + amp*2);
+    ctx.lineTo(0, y0 + amp*2);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+}
+
+function vignettePulse(t, alphaMul){
+  if (!canvas) return;
+  const W = canvas.width, H = canvas.height;
+  const a = (0.32 + 0.14*Math.sin(t*1.25)) + fxBoost*0.10 + bigBangBoost*0.18;
+  ctx.globalCompositeOperation = "screen";
+  ctx.globalAlpha = a * alphaMul;
+
+  const g = ctx.createRadialGradient(W*0.5, H*0.45, 0, W*0.5, H*0.45, Math.max(W,H)*0.90);
+  g.addColorStop(0, "rgba(255,206,105,0.26)");
+  g.addColorStop(0.46, "rgba(175,110,255,0.20)");
+  g.addColorStop(1, "rgba(0,0,0,0.0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,W,H);
+
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+}
+
+function drawStars(t, alphaMul){
+  if (!canvas) return;
+  ctx.globalCompositeOperation = "screen";
   for (const s of stars){
     const tw = 0.35 + 0.65*Math.sin(t*s.tw + s.x*0.0009 + s.y*0.0007);
-    ctx.globalAlpha = s.a * tw * (0.62 + fxBoost*0.22 + bigBangBoost*0.55) * alphaMul;
+    ctx.globalAlpha = s.a * tw * (0.66 + fxBoost*0.16 + bigBangBoost*0.35) * alphaMul;
     ctx.fillStyle = "rgba(255,255,255,1)";
     ctx.beginPath();
     ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
@@ -413,24 +683,56 @@ function drawStars(t, alphaMul){
   }
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = "source-over";
-  ctx.clearRect(W, H, 0, 0);
 }
-function vignettePulse(t, alphaMul){
+
+function drawWarp(alphaMul){
   if (!canvas) return;
   const W = canvas.width, H = canvas.height;
-  const a = (0.30 + 0.14*Math.sin(t*1.25)) + fxBoost*0.10 + bigBangBoost*0.22;
-
   ctx.globalCompositeOperation = "screen";
-  ctx.globalAlpha = a * alphaMul;
-  const g = ctx.createRadialGradient(W*0.5, H*0.45, 0, W*0.5, H*0.45, Math.max(W,H)*0.90);
-  g.addColorStop(0, "rgba(255,206,105,0.26)");
-  g.addColorStop(0.46, "rgba(175,110,255,0.20)");
-  g.addColorStop(1, "rgba(0,0,0,0.0)");
-  ctx.fillStyle = g;
-  ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = "rgba(255,206,105,0.60)";
+  ctx.lineWidth = 1.5 * devicePixelRatio;
+
+  const speedMul = 1.0 + fxBoost*0.30 + bigBangBoost*1.8;
+
+  for (const st of streaks){
+    st.y += st.sp * 0.016 * speedMul;
+    if (st.y > H + 60) { st.y = -60; st.x = Math.random()*W; }
+    ctx.globalAlpha = st.a * (1.0 + fxBoost*0.30 + bigBangBoost*0.65) * alphaMul;
+    ctx.beginPath();
+    ctx.moveTo(st.x, st.y);
+    ctx.lineTo(st.x, st.y - st.len);
+    ctx.stroke();
+  }
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = "source-over";
 }
+
+function drawComets(alphaMul){
+  if (!canvas) return;
+  const W = canvas.width, H = canvas.height;
+  ctx.globalCompositeOperation = "screen";
+  ctx.strokeStyle = "rgba(175,110,255,0.55)";
+  ctx.lineWidth = 1.9 * devicePixelRatio;
+
+  const speedMul = 1.0 + fxBoost*0.40 + bigBangBoost*1.4;
+
+  for (const c of comets){
+    c.x += c.vx * 60 * 0.016 * speedMul;
+    c.y += c.vy * 60 * 0.016 * speedMul;
+    if (c.y > H + 80 || c.x > W + 80){
+      c.x = -80;
+      c.y = Math.random()*H*0.7;
+    }
+    ctx.globalAlpha = c.a * (0.58 + fxBoost*0.30 + bigBangBoost*0.45) * alphaMul;
+    ctx.beginPath();
+    ctx.moveTo(c.x, c.y);
+    ctx.lineTo(c.x - c.len*0.16, c.y - c.len);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+}
+
 function drawBursts(){
   if (!bursts.length) return;
   ctx.globalCompositeOperation = "screen";
@@ -441,7 +743,7 @@ function drawBursts(){
     b.vy *= 0.985;
     b.life -= 0.012;
 
-    ctx.globalAlpha = Math.max(0, b.life) * (0.95 + bigBangBoost*0.40);
+    ctx.globalAlpha = Math.max(0, b.life) * (0.95 + fxBoost*0.18 + bigBangBoost*0.35);
     ctx.fillStyle = "rgba(255,206,105,1)";
     ctx.beginPath();
     ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
@@ -451,6 +753,7 @@ function drawBursts(){
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = "source-over";
 }
+
 function drawShockwaves(){
   if (!shockwaves.length) return;
   const W = canvas.width, H = canvas.height;
@@ -463,7 +766,7 @@ function drawShockwaves(){
     sw.life -= 0.018;
 
     const a = Math.max(0, sw.life);
-    ctx.globalAlpha = a * (0.75 + bigBangBoost*0.40);
+    ctx.globalAlpha = a * (0.75 + bigBangBoost*0.35);
     ctx.strokeStyle = "rgba(255,255,255,0.9)";
     ctx.beginPath();
     ctx.arc(sw.x, sw.y, sw.r, 0, Math.PI*2);
@@ -480,8 +783,10 @@ function drawShockwaves(){
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = "source-over";
 }
+
 function drawStarExplosions(){
   if (!starExplosions.length) return;
+
   ctx.globalCompositeOperation = "screen";
   for (const p of starExplosions){
     p.x += p.vx;
@@ -500,8 +805,10 @@ function drawStarExplosions(){
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = "source-over";
 }
+
 function drawConfetti(){
   if (!confetti.length) return;
+
   ctx.globalCompositeOperation = "source-over";
   for (const c of confetti){
     c.x += c.vx;
@@ -522,17 +829,32 @@ function drawConfetti(){
   confetti = confetti.filter(c => c.life > 0 && c.y < canvas.height + 80*devicePixelRatio);
   ctx.globalAlpha = 1;
 }
+
 function renderFx(ts){
   if (!canvas || !ctx) return;
   const t = (ts - fxStart) / 1000;
+
   fxBoost = Math.max(0, fxBoost - 0.006);
   bigBangBoost = Math.max(0, bigBangBoost - 0.010);
 
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0,0,W,H);
 
-  drawStars(t, 0.75);
-  vignettePulse(t, 0.75);
+  // Idle
+  const idleAlpha = 0.70;
+  drawStars(t, idleAlpha);
+  vignettePulse(t, idleAlpha);
+  nebulaCloud(t, 0.55);
+
+  // Alarm mode
+  if (fxAllMode){
+    drawStars(t, 1.0);
+    vignettePulse(t, 1.0);
+    nebulaCloud(t, 1.0);
+    aurora(t, 1.0);
+    drawWarp(1.0);
+    drawComets(1.0);
+  }
 
   drawShockwaves();
   drawBursts();
@@ -563,6 +885,7 @@ function parseYouTubeId(url){
     return null;
   }catch{ return null; }
 }
+
 function createYTPlayer(videoId, autoplay){
   const v = clampInt($("ytVol")?.value, 0, 100, 70);
   ytPlayer = new YT.Player("ytPlayer", {
@@ -576,9 +899,11 @@ function createYTPlayer(videoId, autoplay){
     }
   });
 }
+
 window.onYouTubeIframeAPIReady = function(){
   if (pendingYTVideoId) createYTPlayer(pendingYTVideoId, false);
 };
+
 function setYouTubeEmbed(url, { autoplay=false } = {}){
   const wrap = $("ytEmbed");
   if (!wrap) return;
@@ -594,6 +919,7 @@ function setYouTubeEmbed(url, { autoplay=false } = {}){
   pendingYTVideoId = id;
   if (window.YT && YT.Player) createYTPlayer(id, autoplay);
 }
+
 function syncYTVolumeUI(){
   const v = clampInt($("ytVol")?.value, 0, 100, 70);
   if ($("ytVolPct")) $("ytVolPct").textContent = `${v}%`;
@@ -622,6 +948,8 @@ if ($("loadEmbed")){
     saveState(snapshotState());
   });
 }
+
+/* Preloaded embed */
 if ($("ytEmbed")){
   $("ytEmbed").innerHTML = `<div>Paste a valid YouTube URL to embed</div>`;
   if ($("ytUrl")?.value && parseYouTubeId($("ytUrl").value)){
@@ -630,15 +958,10 @@ if ($("ytEmbed")){
 }
 
 /* =========================================================
-   Alarm runtime state (IMPORTANT)
-   - alarmActive is the TRUE source of “ringing”
-   - sleepMode is a latch toggle, not a timeout
+   Alarm ringing UX (NO TIMEOUT)
    ========================================================= */
-let alarmActive = false;
-let sleepMode = false;
-
-/* Vibration loop: browsers may limit vibration; we keep requesting */
 let vibrateInterval = null;
+
 function startVibrationLoop(){
   if (!("vibrate" in navigator)) return;
   stopVibrationLoop();
@@ -653,75 +976,30 @@ function stopVibrationLoop(){
   if ("vibrate" in navigator) navigator.vibrate(0);
 }
 
-/* Visual ringing class: purely visual */
-function applyRingingVisuals(on){
-  if (on) document.body.classList.add("alarm-ringing");
-  else document.body.classList.remove("alarm-ringing");
-}
+function startRingingUX(){
+  document.body.classList.add("alarm-ringing");
+  fxAllMode = true;
+  fxBoost = 1.0;
 
-/* Sleep button behavior:
-   - visible whenever alarmActive OR sleepMode
-   - toggles sleepMode (latch) */
-function updateSleepButton(){
   const btn = $("sleepBtn");
-  if (!btn) return;
+  if (btn) btn.classList.add("show"); // stays until Sleep/Stop pressed
 
-  const show = alarmActive || sleepMode;
-  btn.classList.toggle("show", show);
-
-  if (sleepMode){
-    btn.textContent = "Wake";
-  } else {
-    btn.textContent = "Sleep";
-  }
+  startVibrationLoop();
 }
 
-/* Enter sleep = stop everything, but keep latch on */
-function enterSleepMode(){
-  sleepMode = true;
+function stopRingingUX(){
+  document.body.classList.remove("alarm-ringing");
+  fxAllMode = false;
 
-  // This is not “auto 30 sec”; it stays until user presses Wake/Stop.
-  alarmActive = false;
-  applyRingingVisuals(false);
+  const btn = $("sleepBtn");
+  if (btn) btn.classList.remove("show");
 
-  stopSound();
   stopVibrationLoop();
-  clearBigBang();
-
-  updateSleepButton();
 }
-/* Exit sleep = just clears latch */
-function exitSleepMode(){
-  sleepMode = false;
-  updateSleepButton();
-}
-
-/* Stop = full reset */
-function stopAlarmEverywhere(){
-  sleepMode = false;
-  alarmActive = false;
-  applyRingingVisuals(false);
-
-  stopSound();
-  stopVibrationLoop();
-  clearBigBang();
-
-  updateSleepButton();
-}
-
-if ($("sleepBtn")){
-  $("sleepBtn").addEventListener("click", () => {
-    // Toggle latch
-    if (sleepMode) exitSleepMode();
-    else enterSleepMode();
-  });
-}
-if ($("stopAlarm")) $("stopAlarm").addEventListener("click", stopAlarmEverywhere);
 
 /* =========================================================
    Big Bang +3m (RELIABLE)
-   - Arms at alarm start (if enabled)
-   - Fires only if alarmActive is still true (not sleeping/stopped)
+   - due time stored; polled; catches up on visibilitychange
    ========================================================= */
 let bigBangDueAt = null;
 let bigBangArmed = false;
@@ -732,18 +1010,21 @@ function armBigBang3Minutes(){
   bigBangArmed = $("bigBangAfter3")?.checked === true;
   bigBangDueAt = bigBangArmed ? (Date.now() + 180000) : null;
 }
+
 function clearBigBang(){
   bigBangDueAt = null;
   bigBangArmed = false;
   bigBangFired = false;
   document.body.classList.remove("bb-seq");
 }
+
 function maybeFireBigBang(){
   if (!bigBangArmed || bigBangFired) return;
   if (!bigBangDueAt) return;
 
-  // Must still be actively alarming
-  if (!alarmActive) return;
+  // Must still be actively ringing
+  const stillRinging = document.body.classList.contains("alarm-ringing");
+  if (!stillRinging) return;
 
   if (Date.now() >= bigBangDueAt){
     bigBangFired = true;
@@ -755,48 +1036,39 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden) maybeFireBigBang();
 });
 
-/* If user turns Big Bang ON while already ringing, arm immediately */
-if ($("bigBangAfter3")){
-  $("bigBangAfter3").addEventListener("change", () => {
-    saveState(snapshotState());
-    if (alarmActive && $("bigBangAfter3").checked){
-      armBigBang3Minutes();
-    }
-    if (!$("bigBangAfter3").checked){
-      clearBigBang();
-    }
-  });
-}
-
 /* =========================================================
-   Big Bang (Terminator-style + extra FX)
+   Big Bang (Terminator-style) + explosions
    ========================================================= */
 function startBigBangSequenceOverlay(){
+  // CSS handles: warp → black → white dot → explode flash
   document.body.classList.add("bb-seq");
+  // Remove class after animation completes
   setTimeout(() => document.body.classList.remove("bb-seq"), 2400);
 }
 
 function triggerBigBangNow(){
-  if (!alarmActive) return;
+  if (!document.body.classList.contains("alarm-ringing")) return;
 
   ensureAudio();
 
-  // Terminator iris blast
+  // Screen warp / terminator collapse / explode
   startBigBangSequenceOverlay();
 
   // Turbo FX
   bigBangBoost = 1.0;
   fxBoost = 1.0;
 
-  spawnAlarmBurst(2.8);
+  // Canvas: multiple hits
+  spawnAlarmBurst(2.4);
+  spawnAlarmBurst(1.8);
   spawnShockwaves();
-  spawnStarExplosion(2.4);
-  spawnConfetti(2.2);
+  spawnStarExplosion(2.0);
+  spawnConfetti(2.0);
 
-  // Big impact vibration hit (if supported)
+  // Optional: big vibration hit
   if ("vibrate" in navigator) navigator.vibrate([650, 120, 350]);
 
-  // Add a big “impact” layer to the alarm audio (without stopping it)
+  // Add a big “impact” layer to the existing alarm audio (without stopping it)
   const t0 = audioCtx.currentTime;
   const uiV = clampInt($("alarmVol")?.value, 0, 100, 80);
   const base = alarmUISliderToGain(uiV);
@@ -856,27 +1128,35 @@ function triggerBigBangNow(){
 }
 
 /* =========================================================
-   Alarm start / stop
+   Alarm trigger + scheduled alarm
    ========================================================= */
+function getAlarmTargetFromInputs(){
+  return {
+    hour: clampInt($("alarmHour")?.value, 0, 23, 7),
+    min:  clampInt($("alarmMin")?.value, 0, 59, 30),
+    sec:  clampInt($("alarmSec")?.value, 0, 59, 0),
+    ms:   clampInt($("alarmMs")?.value,  0, 999, 0)
+  };
+}
+
+function stopAlarmEverywhere(){
+  clearBigBang();
+  stopSound();
+  stopRingingUX();
+}
+
+if ($("sleepBtn")) $("sleepBtn").addEventListener("click", stopAlarmEverywhere);
+
 function triggerAlarm({ autoplayVideo=true } = {}){
   if (!$("alarmEnabled")?.checked) return;
-
-  // If currently in sleep latch, do NOT re-trigger
-  if (sleepMode) return;
-
   ensureAudio();
 
-  // Start alarm
-  alarmActive = true;
-  applyRingingVisuals(true);
-  updateSleepButton();
-
+  clearBigBang(); // reset any previous schedule/state
   spawnAlarmBurst(1.2);
-  startVibrationLoop();
+  startRingingUX();
   playToneProfile($("alarmSound")?.value || "chime");
 
-  // Big Bang schedule
-  clearBigBang();
+  // Arm Big Bang (+3 minutes from alarm START)
   armBigBang3Minutes();
 
   // YouTube
@@ -887,20 +1167,12 @@ function triggerAlarm({ autoplayVideo=true } = {}){
 }
 
 if ($("testAlarm")) $("testAlarm").addEventListener("click", () => triggerAlarm({ autoplayVideo: false }));
+if ($("stopAlarm")) $("stopAlarm").addEventListener("click", stopAlarmEverywhere);
 
 /* Scheduled alarm check */
 let scheduledToken = null;
-function getAlarmTargetFromInputs(){
-  return {
-    hour: clampInt($("alarmHour")?.value, 0, 23, 7),
-    min:  clampInt($("alarmMin")?.value, 0, 59, 30),
-    sec:  clampInt($("alarmSec")?.value, 0, 59, 0),
-    ms:   clampInt($("alarmMs")?.value,  0, 999, 0)
-  };
-}
 function checkScheduledAlarm(){
   if (!$("alarmEnabled")?.checked) return;
-  if (sleepMode) return; // if sleeping, do not auto-trigger
 
   const t = getAlarmTargetFromInputs();
   const now = new Date();
@@ -921,9 +1193,7 @@ function checkScheduledAlarm(){
 }
 setInterval(checkScheduledAlarm, 25);
 
-/* =========================================================
-   Timer
-   ========================================================= */
+/* ---------- Timer ---------- */
 let timerInterval = null;
 let timerRemaining = 0;
 let timerTotal = 0;
@@ -997,9 +1267,7 @@ if ($("timerMin")) $("timerMin").addEventListener("change", loadTimerFromInputs)
 if ($("timerSec")) $("timerSec").addEventListener("change", loadTimerFromInputs);
 loadTimerFromInputs();
 
-/* =========================================================
-   Stopwatch (unchanged behavior)
-   ========================================================= */
+/* ---------- Stopwatch + flower ---------- */
 let swInterval = null;
 let swRunning = false;
 let swStartTs = 0;
@@ -1015,6 +1283,7 @@ function formatStopwatch(ms){
   const min = Math.floor(totalSec / 60);
   return `${pad2(min)}:${pad2(sec)}.${tenths}`;
 }
+
 function buildHexFlowerPath(cx, cy, innerR, outerR){
   const pts = [];
   for (let i = 0; i < 12; i++){
@@ -1136,4 +1405,3 @@ renderStopwatch();
 syncAlarmVolumeUI();
 syncYTVolumeUI();
 renderAlarmCenter();
-updateSleepButton();
