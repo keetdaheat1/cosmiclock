@@ -1,133 +1,35 @@
+/* =========================
+   Cosmiclock — styles.css (FULL)
+   - Includes Big Bang Terminator effect overlays
+   ========================= */
+
 :root{
   --gold: rgba(255, 206, 105, 0.92);
   --purple: rgba(175, 110, 255, 0.22);
   --text: rgba(255,255,255,0.92);
   --muted: rgba(255,255,255,0.68);
   --shadow: 0 18px 60px rgba(0,0,0,0.55);
-  --uiScale: 1.06;
-  --glassA: rgba(0,0,0,0.30);   /* main glass for cards */
-  --glassB: rgba(0,0,0,0.30);   /* same for title cloud */
+  --glassA: rgba(0,0,0,0.30);
+  --glassB: rgba(0,0,0,0.30);
   --glassBorder: rgba(255,255,255,0.16);
 }
 
-/* =========================
-   RESPONSIVE + RESOLUTION
-   iPad + Windows/desktop
-   ========================= */
-
-/* Fluid scaling instead of a fixed --uiScale */
-:root{
-  --uiScale: 1;
-}
-body{
-  /* Smoothly scale UI between phones and big desktops */
-  font-size: clamp(14px, 1.1vw, 17px);
-}
-
-/* Keep everything from overflowing horizontally */
-.layout, .center, .side, .card, .embed, .fillTank, .pieArea{
-  min-width: 0;
-}
-body{
-  overflow-x: hidden;
-}
-
-/* Make the 3 columns fit better on laptops / smaller desktops */
-@media (max-width: 1360px){
-  .layout{
-    grid-template-columns: 300px minmax(0, 1fr) 300px;
-  }
-  .centerCard{ max-width: 760px; }
-}
-
-/* iPad landscape and similar widths: switch to 2 columns
-   Left and Right become side-by-side under the center (or stacked nicely) */
-@media (max-width: 1180px){
-  .layout{
-    grid-template-columns: 1fr;
-    padding-top: 78px;  /* room for your top title */
-  }
-
-  /* Center stays first; side cards stack below */
-  .leftSide{ order: 2; }
-  .rightSide{ order: 3; }
-  .center{ order: 1; }
-
-  .centerCard{
-    max-width: 980px;
-    width: 100%;
-  }
-
-  /* Keep YouTube from being too wide */
-  .megaEmbed{
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-}
-
-/* iPad portrait / smaller tablets: tighten spacing and ensure everything fits */
-@media (max-width: 820px){
-  .layout{ padding: 86px 10px 14px; gap: 10px; }
-
-  .heroTime{
-    font-size: clamp(34px, 7vw, 48px);
-  }
-
-  .centerCard{ padding: 12px; }
-
-  /* Reduce embed height slightly to keep timer visible on one screen */
-  .megaEmbed{
-    aspect-ratio: 16 / 10;
-  }
-
-  /* Big visuals scale down to avoid pushing content off-screen */
-  .bigPie{ max-width: 320px; }
-  .bigTank{ max-width: 340px; height: 200px; }
-
-  /* Alarm volume layout becomes horizontal (no cramped overflow) */
-  .alarmRowTop{
-    grid-template-columns: 1fr;
-  }
-  .alarmVolInline{
-    justify-items: stretch;
-  }
-  .alarmVolSliderRow{
-    width: 100%;
-    height: auto;
-    justify-content: flex-start;
-  }
-  .vSlider{
-    transform: none;
-    width: 100%;
-  }
-  .alarmVolPctSide{
-    margin-left: 10px;
-  }
-}
-
-/* Very small screens (phones) – stack and keep controls usable */
-@media (max-width: 520px){
-  .heroTime{ font-size: 34px; }
-  .alarmBtn{ width: 100%; }
-  .alarmBtnRow{ flex-direction: column; }
-}
-
-*{ box-sizing: border-box; }
+*{ box-sizing:border-box; }
 html,body{ height:100%; }
-
 body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
   color: var(--text);
   background: radial-gradient(900px 600px at 50% 0%, #22103d 0%, #0b0b16 40%, #06070f 100%);
   overflow-x:hidden;
-  font-size: calc(16px * var(--uiScale));
+  font-size: clamp(14px, 1.1vw, 17px);
+  min-height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Background video */
 .bgVideo{
-  position: fixed !important;
+  position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
@@ -137,9 +39,8 @@ body{
   z-index: 0;
 }
 
-/* FIX #2: overlay should be FIXED so it behaves consistently across layout/scroll */
 .bgOverlay{
-  position: fixed;              /* <-- was absolute */
+  position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 1;
@@ -159,25 +60,12 @@ body{
   z-index: 2;
 }
 
-/* Top */
-.siteTitle{
-  text-align: center;
-  margin: 18px auto 10px;
-  font-size: 32px;
-  font-weight: 700;
-  color: #fff;
-
-  text-shadow:
-    0 0 14px rgba(255,206,105,0.35),
-    0 0 32px rgba(175,110,255,0.25);
-}
-
+/* Top bar */
 .topBar{
   position: relative;
   z-index: 3;
   padding: 14px 18px 6px;
   display:flex;
-  align-items:flex-start;
   justify-content: center;
 }
 
@@ -188,16 +76,12 @@ body{
   top: 10px;
   padding: 8px 16px;
   border-radius: 999px;
-  background: rgba(0,0,0,0.28);
+  background: var(--glassB);
+  border: 1px solid var(--glassBorder);
   box-shadow: 0 16px 60px rgba(0,0,0,0.55);
-  border: 1px solid rgba(255,255,255,0.14);
   backdrop-filter: blur(12px);
   overflow: hidden;
   animation: cloudBreath 5.2s ease-in-out infinite;
-
-  background: var(--glassB);
-  border: 1px solid var(--glassBorder);
-  backdrop-filter: blur(12px);
 }
 @keyframes cloudBreath{
   0%   { transform: translateX(-50%) scale(1); }
@@ -224,8 +108,7 @@ body{
 }
 .titleCloudText{
   position: relative;
-  font-size: calc(14px * var(--uiScale));
-  letter-spacing: 0.2px;
+  font-size: 14px;
   color: rgba(255,255,255,0.92);
   text-shadow: 0 0 18px rgba(255,206,105,0.25);
   z-index: 2;
@@ -271,8 +154,6 @@ body{
   gap: 12px;
   align-items: start;
 }
-.leftSide,.rightSide{ margin-top: 4px; }
-
 .center{
   display: grid;
   grid-template-rows: auto auto;
@@ -285,11 +166,13 @@ body{
   justify-self: center;
 }
 .centerCardTight{ margin-top: -8px; }
+.leftSide,.rightSide{ margin-top: 4px; }
 
+/* Hero */
 .hero{ text-align:center; padding: 2px 8px 0; }
 .heroTight{ margin-top: -10px; }
 .heroTime{
-  font-size: calc(50px * var(--uiScale));
+  font-size: 50px;
   line-height: 1.0;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.8px;
@@ -297,14 +180,14 @@ body{
 }
 .heroDate{
   margin-top: 6px;
-  font-size: calc(12px * var(--uiScale));
+  font-size: 12px;
   color: var(--muted);
 }
 
 /* Cards */
 .card{
   border-radius: 20px;
-  padding: calc(14px * var(--uiScale));
+  padding: 14px;
   background: var(--glassA);
   border: 1px solid var(--glassBorder);
   box-shadow: var(--shadow);
@@ -330,18 +213,13 @@ body{
 }
 
 .panelTitle{
-  font-size: calc(12px * var(--uiScale));
+  font-size: 12px;
   color: var(--muted);
   letter-spacing: 0.25px;
   margin-bottom: 8px;
-}
-.alarmTitle{
   text-align:center;
-  margin-bottom: 10px;
-  font-size: calc(13px * var(--uiScale));
-  letter-spacing: 0.35px;
 }
-.centerTitle{ text-align:center; }
+.alarmTitle{ margin-bottom: 10px; }
 
 .sep{
   border: none;
@@ -353,11 +231,12 @@ body{
 /* Controls */
 .row{ display:flex; gap: 10px; align-items:flex-end; margin: 9px 0; }
 .row.wrap{ flex-wrap: wrap; }
+
 label{
   display:flex;
   flex-direction: column;
   gap: 6px;
-  font-size: calc(12px * var(--uiScale));
+  font-size: 12px;
   color: var(--muted);
 }
 .stretch{ flex: 1; }
@@ -366,7 +245,7 @@ input, select{
   background: rgba(0,0,0,0.34);
   border: 1px solid rgba(255,255,255,0.18);
   color: var(--text);
-  padding: calc(9px * var(--uiScale)) calc(11px * var(--uiScale));
+  padding: 9px 11px;
   border-radius: 14px;
   outline:none;
 }
@@ -379,21 +258,21 @@ button{
   border: 1px solid rgba(255,255,255,0.18);
   background: rgba(255,255,255,0.08);
   color: var(--text);
-  padding: calc(9px * var(--uiScale)) calc(11px * var(--uiScale));
+  padding: 9px 11px;
   border-radius: 14px;
   cursor:pointer;
-  height: calc(38px * var(--uiScale));
+  height: 38px;
 }
 button:hover{ background: rgba(255,255,255,0.12); }
 .primary{ background: rgba(255,206,105,0.14); border-color: rgba(255,206,105,0.30); }
 .primary:hover{ background: rgba(255,206,105,0.20); }
 .danger{ background: rgba(255, 80, 90, 0.16); border-color: rgba(255, 80, 90, 0.38); }
 .danger:hover{ background: rgba(255, 80, 90, 0.24); }
+
 .toggle{ flex-direction: row; gap: 10px; align-items:center; color: var(--text); }
 .toggle input{ width: 18px; height: 18px; }
 
 .tightRow{ margin: 7px 0; }
-
 .alarmBtnRow{ justify-content: center; }
 .alarmBtn{
   width: 124px;
@@ -403,57 +282,48 @@ button:hover{ background: rgba(255,255,255,0.12); }
   white-space: nowrap;
 }
 
-/* Alarm volume side */
-.alarmTopGrid{
-  display: grid;
-  grid-template-columns: 1fr 120px;
-  gap: 8px;
+/* Alarm volume inline */
+.alarmRowTop{
+  display:grid;
+  grid-template-columns: 1fr 160px;
+  gap: 10px;
   align-items: start;
 }
-.alarmVolSide{
-  justify-self: end;
-  padding-left: 6px;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  align-items: center;
+.alarmVolInline{
+  display:grid;
   justify-items: center;
-  gap: 6px;
-  padding-top: 4px;
+  gap: 8px;
 }
 .alarmVolLabel{
   font-size: 12px;
   color: rgba(255,255,255,0.78);
-  text-align:center;
 }
 .alarmVolSliderRow{
-  width: 120px;
-  height: 154px;
+  width: 140px;
+  height: 160px;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 .vSlider{
-  width: 148px;
+  width: 150px;
   transform: rotate(-90deg);
   transform-origin: center;
 }
-/* moved % LEFT so it stays inside border */
 .alarmVolPctSide{
   font-size: 12px;
   color: rgba(255,255,255,0.86);
-  margin-left: 4px;
   min-width: 44px;
-  text-align: left;
 }
 
-/* Stopwatch centered */
+/* Stopwatch */
 .swCenter{ margin-left:auto; margin-right:auto; text-align:center; }
 .swButtons{ justify-content:center; }
 .swSettings{ justify-content:center; }
 .swCenterList{ margin-left:auto; margin-right:auto; max-width: 240px; }
 
 .swBig{
-  font-size: calc(30px * var(--uiScale));
+  font-size: 30px;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.5px;
   padding: 4px 0 2px;
@@ -496,8 +366,6 @@ button:hover{ background: rgba(255,255,255,0.12); }
   max-height: 120px;
   overflow:auto;
 }
-.compactLaps{ max-height: 96px; }
-.laps li{ margin: 4px 0; font-variant-numeric: tabular-nums; }
 
 /* Analog clock */
 .analogWrap{
@@ -508,15 +376,12 @@ button:hover{ background: rgba(255,255,255,0.12); }
   background: rgba(0,0,0,0.22);
   box-shadow: 0 14px 44px rgba(0,0,0,0.34);
 }
-.compactAnalog{ margin-top: 2px; }
 .analogClock{
   width: 100%;
   max-width: 280px;
   margin: 0 auto;
   display:block;
 }
-.compactClock{ max-width: 270px; }
-
 .clockRing{ fill: rgba(0,0,0,0.20); stroke: rgba(255,206,105,0.50); stroke-width: 2.0; }
 .clockInner{ fill: rgba(0,0,0,0.18); stroke: rgba(255,255,255,0.10); stroke-width: 1.2; }
 .tickMajor{ stroke: rgba(255,255,255,0.32); stroke-width: 2.0; stroke-linecap: round; }
@@ -544,7 +409,7 @@ button:hover{ background: rgba(255,255,255,0.12); }
   align-items:center;
   justify-content:center;
   color: var(--muted);
-  font-size: calc(12px * var(--uiScale));
+  font-size: 12px;
   border: 1px solid rgba(255,255,255,0.12);
 }
 .embed iframe{ width:100%; height:100%; border:0; }
@@ -556,8 +421,6 @@ button:hover{ background: rgba(255,255,255,0.12); }
   max-height: 300px;
   margin: 0 auto;
 }
-.compactEmbed{ max-height: 292px; }
-
 .ytVolRow{
   margin-top: 10px;
   padding-top: 10px;
@@ -566,21 +429,20 @@ button:hover{ background: rgba(255,255,255,0.12); }
   align-items:center;
   gap: 10px;
 }
-.volLabel{ font-size: calc(12px * var(--uiScale)); color: var(--muted); }
-.volPct{ font-size: calc(12px * var(--uiScale)); color: var(--muted); min-width: 46px; text-align:right; }
+.volLabel{ font-size: 12px; color: var(--muted); }
+.volPct{ font-size: 12px; color: var(--muted); min-width: 46px; text-align:right; }
 
-/* Sleep button pop-up */
-/* Sleep button — bigger, higher, layered over the clock */
+/* Sleep button — stays visible while alarm-ringing until pressed */
 .sleepBtn{
   display: none;
-
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 140px;                 /* higher (over clock area) */
-  z-index: 9999;              /* on top of the clock + embed */
+  top: 140px;
+  z-index: 999999;
+  pointer-events: auto;
 
-  padding: 18px 34px;         /* bigger */
+  padding: 18px 34px;
   font-size: 18px;
   border-radius: 999px;
 
@@ -595,14 +457,13 @@ button:hover{ background: rgba(255,255,255,0.12); }
   font-weight: 700;
   letter-spacing: 0.5px;
 }
-
 .sleepBtn.show{
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Cosmic selector */
+/* Cosmic selector + Alarm time row */
 .cosmicUnderVideo{
   margin-top: 10px;
   padding-top: 10px;
@@ -612,13 +473,11 @@ button:hover{ background: rgba(255,255,255,0.12); }
   display:flex;
   flex-direction: column;
   gap: 6px;
-  font-size: calc(12px * var(--uiScale));
+  font-size: 12px;
   color: var(--muted);
   width: min(560px, 92%);
   margin: 0 auto;
 }
-
-/* Alarm time inline */
 .alarmPickRow{
   margin-top: 10px;
   padding-top: 10px;
@@ -634,7 +493,6 @@ button:hover{ background: rgba(255,255,255,0.12); }
   font-size: 12px;
   color: var(--muted);
   margin-bottom: 10px;
-  letter-spacing: 0.2px;
 }
 .alarmPickInlineFields{
   display:flex;
@@ -660,19 +518,16 @@ button:hover{ background: rgba(255,255,255,0.12); }
   letter-spacing: 0.8px;
   font-size: 15px;
   color: rgba(255,255,255,0.95);
-  text-shadow: 0 0 18px rgba(255,206,105,0.16);
   margin-bottom: 10px;
 }
 
 /* Timer */
 .timerTime{
-  font-size: calc(40px * var(--uiScale));
+  font-size: 40px;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.6px;
   margin: 2px 0 8px;
 }
-.waterTitle{ margin-top: 10px; }
-
 .pieArea{
   position: relative;
   width: 100%;
@@ -694,46 +549,34 @@ button:hover{ background: rgba(255,255,255,0.12); }
     drop-shadow(0 0 10px rgba(255,206,105,0.30))
     drop-shadow(0 0 18px rgba(255,206,105,0.24))
     drop-shadow(0 0 34px rgba(255,206,105,0.16));
-  animation: pieAura 2.2s ease-in-out infinite;
 }
-@keyframes pieAura{ 0%{opacity:.88} 50%{opacity:1} 100%{opacity:.88} }
 .pieCenterText{
   position:absolute; inset:0;
   display:flex; flex-direction: column;
   align-items:center; justify-content:center;
   pointer-events:none;
 }
-.piePct{ font-size: calc(32px * var(--uiScale)); font-variant-numeric: tabular-nums; }
-.pieSub{ font-size: calc(12px * var(--uiScale)); color: var(--muted); margin-top: 6px; }
+.piePct{ font-size: 32px; font-variant-numeric: tabular-nums; }
+.pieSub{ font-size: 12px; color: var(--muted); margin-top: 6px; }
 
 /* Water container */
-/* Water container — DEEPER + BIGGER */
 .fillTank{
   position: relative;
   margin: 10px auto 0;
   width: 100%;
-  max-width: 420px;          /* wider */
-  height: 200px;             /* much deeper */
+  max-width: 460px;
+  height: 280px;
   border-radius: 22px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.14);
-
   background:
     radial-gradient(160px 110px at 25% 18%, rgba(175,110,255,0.26), transparent 60%),
     radial-gradient(180px 130px at 80% 35%, rgba(255,206,105,0.20), transparent 60%),
     rgba(0,0,0,0.24);
-
   box-shadow:
     0 18px 52px rgba(0,0,0,0.55),
     0 0 26px rgba(255,206,105,0.16);
 }
-
-/* Extra-large variant used by timer panel */
-.bigTank{
-  max-width: 460px;          /* bigger width */
-  height: 280px;             /* deep tank */
-}
-
 .fillLiquid{
   position:absolute;
   left:0; right:0; bottom:0;
@@ -749,757 +592,41 @@ button:hover{ background: rgba(255,255,255,0.12); }
       rgba(255,206,105,0.16)
     );
 }
-.fillSparkles{
-  position:absolute; inset:0;
-  background:
-    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.55) 0 2px, transparent 3px),
-    radial-gradient(circle at 45% 60%, rgba(255,206,105,0.70) 0 2px, transparent 3px),
-    radial-gradient(circle at 70% 75%, rgba(255,255,255,0.48) 0 1.5px, transparent 3px),
-    radial-gradient(circle at 85% 50%, rgba(255,206,105,0.60) 0 2px, transparent 3px),
-    radial-gradient(circle at 15% 40%, rgba(255,255,255,0.40) 0 1.5px, transparent 3px);
-  opacity: 0.70;
-  animation: glitterDrift 2.4s linear infinite;
-  filter: drop-shadow(0 0 10px rgba(255,206,105,0.22));
-}
-@keyframes glitterDrift{
-  0%{ transform: translateY(10px) translateX(0px); opacity:0.38; }
-  50%{ transform: translateY(-8px) translateX(7px); opacity:0.82; }
-  100%{ transform: translateY(10px) translateX(0px); opacity:0.38; }
-}
-.fillBubbles{
-  position:absolute; inset:0;
-  background:
-    radial-gradient(circle at 25% 120%, rgba(255,255,255,0.35) 0 6px, transparent 7px),
-    radial-gradient(circle at 55% 120%, rgba(255,255,255,0.25) 0 4px, transparent 5px),
-    radial-gradient(circle at 75% 120%, rgba(255,255,255,0.30) 0 5px, transparent 6px),
-    radial-gradient(circle at 40% 120%, rgba(255,255,255,0.20) 0 3px, transparent 4px);
-  opacity: 0.62;
-  animation: bubblesUp 2.0s linear infinite;
-}
-@keyframes bubblesUp{
-  0%{ background-position: 25% 120%, 55% 120%, 75% 120%, 40% 120%; opacity:0.38; }
-  50%{ opacity:0.70; }
-  100%{ background-position: 25% -20%, 55% -20%, 75% -20%, 40% -20%; opacity:0.22; }
-}
+.fillSparkles{ position:absolute; inset:0; opacity:0.70; }
+.fillBubbles{ position:absolute; inset:0; opacity:0.62; }
 
-/* Alarm ringing shake (30s) */
-@keyframes cardShake {
-  0%   { transform: translate3d(0,0,0) rotate(0deg); }
-  10%  { transform: translate3d(-2px, 1px, 0) rotate(-0.25deg); }
-  20%  { transform: translate3d(2px, -1px, 0) rotate(0.25deg); }
-  30%  { transform: translate3d(-3px, 0px, 0) rotate(-0.35deg); }
-  40%  { transform: translate3d(3px, 1px, 0) rotate(0.35deg); }
-  50%  { transform: translate3d(-2px, -1px, 0) rotate(-0.25deg); }
-  60%  { transform: translate3d(2px, 1px, 0) rotate(0.25deg); }
-  70%  { transform: translate3d(-3px, 0px, 0) rotate(-0.35deg); }
-  80%  { transform: translate3d(3px, -1px, 0) rotate(0.35deg); }
-  90%  { transform: translate3d(-2px, 1px, 0) rotate(-0.25deg); }
-  100% { transform: translate3d(0,0,0) rotate(0deg); }
+/* Responsive */
+@media (max-width: 1360px){
+  .layout{ grid-template-columns: 300px minmax(0, 1fr) 300px; }
+  .centerCard{ max-width: 760px; }
 }
-
-body.alarm-ringing .alarmCard,
-body.alarm-ringing .timerCard,
-body.alarm-ringing .ytCard{
-  animation: cardShake 0.35s infinite;
-}
-
 @media (max-width: 1180px){
-  .layout{ grid-template-columns: 1fr; padding-top: 70px; }
-  .leftSide,.rightSide{ margin-top: 0; }
-  .centerCard{ max-width: 100%; }
-  .megaEmbed{ max-width: 100%; min-height: 220px; max-height: 360px; }
-  .alarmTopGrid{ grid-template-columns: 1fr; }
-  .alarmVolSliderRow{ width: 100%; height: auto; }
-  .vSlider{ transform: none; width: 100%; }
+  .layout{ grid-template-columns: 1fr; padding-top: 78px; }
+  .leftSide{ order: 2; }
+  .rightSide{ order: 3; }
+  .center{ order: 1; }
+  .centerCard{ max-width: 980px; width: 100%; }
+  .megaEmbed{ width: 100%; max-width: 900px; margin: 0 auto; }
+  .alarmRowTop{ grid-template-columns: 1fr; }
+  .alarmVolSliderRow{ width: 100%; height:auto; justify-content:flex-start; }
+  .vSlider{ transform:none; width:100%; }
 }
-
-/* ===========================
-   iPad LANDSCAPE: fit one screen
-   =========================== */
-
-/* Use stable viewport height on mobile Safari */
-html, body{
-  height: 100%;
+@media (max-width: 820px){
+  .layout{ padding: 86px 10px 14px; gap: 10px; }
+  .heroTime{ font-size: clamp(34px, 7vw, 48px); }
+  .centerCard{ padding: 12px; }
+  .megaEmbed{ aspect-ratio: 16/10; }
+  .fillTank{ height: 220px; }
 }
-body{
-  min-height: 100dvh;                 /* iOS Safari real viewport */
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* Prevent the whole page from scrolling on iPad landscape.
-   Instead, let side panels scroll inside themselves if needed. */
-@media (min-width: 900px) and (max-width: 1180px) and (orientation: landscape){
-  body{
-    overflow: hidden;
-  }
-
-  /* Fit to viewport */
-  .layout{
-    height: 100dvh;
-    max-height: 100dvh;
-    padding-top: 76px;                 /* room for your top title cloud */
-    padding-bottom: 10px;
-    grid-template-columns: 280px minmax(0, 1fr) 280px;  /* 3 columns on iPad landscape */
-    gap: 10px;
-    align-items: stretch;
-  }
-
-  /* Make all cards fill available height */
-  .side.card,
-  .centerCard.card{
-    height: calc(100dvh - 76px - 18px);
-    max-height: calc(100dvh - 76px - 18px);
-    overflow: auto;                    /* scroll inside card if needed */
-    overscroll-behavior: contain;
-  }
-
-  /* Reduce top “hero” height so center content fits */
-  .hero{
-    padding: 0 8px;
-    margin-top: -6px;
-  }
-  .heroTime{
-    font-size: 40px;                   /* smaller for iPad landscape */
-  }
-  .heroDate{
-    margin-top: 4px;
-  }
-
-  /* Keep analog clock compact */
-  .compactAnalog{
-    margin-top: 4px;
-    margin-bottom: 8px;
-  }
-  .compactClock{
-    width: 180px;
-    height: 180px;
-  }
-
-  /* Make YouTube embed not too tall (main culprit) */
-  .megaEmbed{
-    aspect-ratio: 16 / 10;
-    max-height: 300px;
-  }
-
-  /* Tighten spacing inside center card */
-  .centerCardTight{
-    padding: 12px;
-  }
-  .row{
-    margin: 7px 0;
-  }
-
-  /* Right timer visuals: smaller but still big */
-  .bigPie{ max-width: 300px; }
-  .bigTank{
-    max-width: 300px;
-    height: 170px;
-  }
-
-  /* Left alarm volume + buttons: avoid overflow */
-  .alarmRowTop{
-    grid-template-columns: 1fr 108px;
-  }
-  .vSlider{
-    width: 140px;                      /* slightly shorter */
-  }
-
-  /* Prevent huge shadows/spacing from pushing layout */
-  .card{
-    padding: 12px;
-  }
+@media (max-width: 520px){
+  .heroTime{ font-size: 34px; }
+  .alarmBtnRow{ flex-direction: column; }
+  .alarmBtn{ width: 100%; }
 }
 
 /* =========================
-   COSMETIC TEXT POLISH
-   Center labels + bold time inputs
+   Alarm shaking (continues until user presses Sleep/Stop)
    ========================= */
-
-/* Center key section titles */
-.panelTitle,
-.timerTitle,
-.sectionTitle,
-.alarmTitle{
-  text-align: center;
-  width: 100%;
-}
-
-/* Specific label overrides (covers most existing markup) */
-#pieTimerTitle,
-#waterContainerTitle,
-#cosmicBgTitle,
-#circleClockRedTitle,
-#youtubeTitle,
-#alarmTimeTitle{
-  text-align: center;
-  width: 100%;
-}
-
-/* Ensure labels inside cards are centered */
-.card .panelTitle,
-.card h2,
-.card h3{
-  text-align: center;
-}
-
-/* Center Alarm Time label row */
-.alarmTimeRow,
-.alarmRowTime,
-.alarmTimeTitle{
-  text-align: center;
-  justify-content: center;
-  width: 100%;
-}
-
-/* Center YouTube label */
-.youtubeLabel,
-.embedLabel{
-  text-align: center;
-  width: 100%;
-}
-
-/* Center Pie Timer & Water Container titles */
-.pieArea .panelTitle,
-.fillTank .panelTitle{
-  text-align: center;
-}
-
-/* Center Cosmic Background title */
-.bgPanel .panelTitle{
-  text-align: center;
-}
-
-/* Center Circle Clock Red title */
-.clockPanel .panelTitle{
-  text-align: center;
-}
-
-/* =========================
-   BOLD TIME INPUT NUMBERS
-   Hour / Minute / Second / ms
-   ========================= */
-
-.alarmTimeRow input,
-.alarmRowTime input,
-.timeInputs input{
-  font-weight: 700;          /* bold */
-  font-size: 16px;           /* optional: slightly larger */
-  text-align: center;        /* keeps numbers neat */
-}
-
-/* Also bold placeholders (if visible) */
-.alarmTimeRow input::placeholder,
-.alarmRowTime input::placeholder{
-  font-weight: 700;
-}
-
-/* Optional: make number steppers cleaner */
-input[type="number"]{
-  font-variant-numeric: tabular-nums;
-}
-
-/* =========================
-   Alarm Time labels
-   Hour / Minute / Second / ms
-   ========================= */
-
-/* Make the label text bold */
-.alarmTimeRow label,
-.alarmRowTime label,
-.timeInputs label{
-  font-weight: 700;          /* BOLD */
-  text-align: center;        /* center label text */
-  align-items: center;       /* center in flex column */
-  width: 100%;
-}
-
-/* Center each label-input block */
-.alarmTimeRow,
-.alarmRowTime,
-.timeInputs{
-  justify-content: center;
-}
-
-/* Ensure inputs stay centered under labels */
-.alarmTimeRow input,
-.alarmRowTime input,
-.timeInputs input{
-  text-align: center;
-}
-
-/* =========================
-   ALARM TIME — BIG SHINY NUMBERS
-   ========================= */
-
-.alarmTimeRow input,
-.alarmRowTime input,
-.timeInputs input{
-  font-weight: 900;                 /* ULTRA bold */
-  font-size: 28px;                  /* BIG */
-  text-align: center;
-
-  /* Make digits align perfectly */
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 1px;
-
-  /* Glass input look */
-  background: rgba(0,0,0,0.45);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 12px;
-
-  padding: 8px 6px;
-
-  /* SHINY text effect */
-  color: #ffffff;
-
-  text-shadow:
-    0 0 8px rgba(255,255,255,0.7),
-    0 0 18px rgba(255,206,105,0.55),
-    0 0 28px rgba(175,110,255,0.35);
-
-  /* Subtle glow around box */
-  box-shadow:
-    inset 0 0 8px rgba(255,255,255,0.08),
-    0 0 12px rgba(255,206,105,0.25);
-
-  transition: all 0.18s ease;
-}
-
-/* Focus glow — looks fantastic when editing */
-.alarmTimeRow input:focus,
-.alarmRowTime input:focus,
-.timeInputs input:focus{
-  outline: none;
-
-  border-color: rgba(255,206,105,0.85);
-
-  box-shadow:
-    inset 0 0 10px rgba(255,255,255,0.15),
-    0 0 18px rgba(255,206,105,0.6),
-    0 0 36px rgba(175,110,255,0.35);
-}
-
-/* Remove number spinner arrows (clean look) */
-
-/* Chrome / Edge / Safari */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button{
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-input[type="number"]{
-  -moz-appearance: textfield;
-}
-
-/* FORCE big shiny digits in the Alarm Time inputs */
-#alarmHour, #alarmMin, #alarmSec, #alarmMs{
-  font-weight: 900 !important;
-  font-size: 30px !important;
-  line-height: 1.1 !important;
-  text-align: center !important;
-
-  font-variant-numeric: tabular-nums !important;
-  letter-spacing: 1px !important;
-
-  color: #fff !important;
-  text-shadow:
-    0 0 8px rgba(255,255,255,0.75),
-    0 0 18px rgba(255,206,105,0.55),
-    0 0 28px rgba(175,110,255,0.35) !important;
-
-  background: rgba(0,0,0,0.45) !important;
-  border: 1px solid rgba(255,255,255,0.28) !important;
-  box-shadow:
-    inset 0 0 8px rgba(255,255,255,0.08),
-    0 0 12px rgba(255,206,105,0.25) !important;
-}
-
-/* Clean number spinners */
-#alarmHour::-webkit-outer-spin-button,
-#alarmHour::-webkit-inner-spin-button,
-#alarmMin::-webkit-outer-spin-button,
-#alarmMin::-webkit-inner-spin-button,
-#alarmSec::-webkit-outer-spin-button,
-#alarmSec::-webkit-inner-spin-button,
-#alarmMs::-webkit-outer-spin-button,
-#alarmMs::-webkit-inner-spin-button{
-  -webkit-appearance: none;
-  margin: 0;
-}
-#alarmHour, #alarmMin, #alarmSec, #alarmMs{
-  -moz-appearance: textfield;
-}
-
-/* =========================
-   CENTER PIE TIMER BLOCK
-   ========================= */
-
-/* Center the title */
-.pieArea .panelTitle{
-  text-align: center;
-  width: 100%;
-}
-
-/* Center the SVG pie itself */
-.pieArea{
-  display: flex;
-  flex-direction: column;
-  align-items: center;   /* horizontal centering */
-}
-
-/* Center the pie graphic */
-.pieArea svg,
-.pieArea .pie{
-  display: block;
-  margin: 0 auto;
-}
-
-/* Center percentage text inside */
-.pieText{
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Center the water container too */
-.fillTank{
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* =========================
-   Alarm time inputs: centered + restore spinners
-   ========================= */
-
-/* Center the whole alarm time row */
-.alarmPickInlineFields{
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-/* Center label + input within each mini block */
-.alarmPickInlineFields .miniLbl{
-  align-items: center;
-  text-align: center;
-}
-
-/* Make the shiny digits centered (you already have bold/shiny) */
-#alarmHour, #alarmMin, #alarmSec, #alarmMs{
-  text-align: center !important;
-}
-
-/* Re-enable spinner arrows ONLY for alarm time inputs */
-#alarmHour, #alarmMin, #alarmSec, #alarmMs{
-  -moz-appearance: auto !important;         /* Firefox */
-}
-
-/* Chrome/Edge/Safari spinners back */
-#alarmHour::-webkit-outer-spin-button,
-#alarmHour::-webkit-inner-spin-button,
-#alarmMin::-webkit-outer-spin-button,
-#alarmMin::-webkit-inner-spin-button,
-#alarmSec::-webkit-outer-spin-button,
-#alarmSec::-webkit-inner-spin-button,
-#alarmMs::-webkit-outer-spin-button,
-#alarmMs::-webkit-inner-spin-button{
-  -webkit-appearance: inner-spin-button !important;
-  appearance: auto !important;
-  margin: 0;
-}
-
-/* Alarm time steppers (works on iPad + desktop) */
-.alarmPickInlineFields{
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.stepField{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.stepLabel{
-  font-weight: 800;
-  text-align: center;
-  color: rgba(255,255,255,0.86);
-}
-
-.stepControl{
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Keep your big shiny digits */
-.stepControl input{
-  width: 88px;
-  text-align: center;
-}
-
-/* Buttons */
-.stepBtn{
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  font-weight: 900;
-  font-size: 22px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  border: 1px solid rgba(255,255,255,0.20);
-  background: rgba(255,255,255,0.10);
-}
-.stepBtn:hover{
-  background: rgba(255,255,255,0.14);
-}
-.stepBtn:active{
-  transform: translateY(1px);
-}
-
-.sitePanel{
-  text-align: center;
-  margin-top: 14px;
-}
-
-.navButtons{
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.navBtn{
-  padding: 8px 16px;
-  border-radius: 999px;
-  text-decoration: none;
-  color: white;
-  font-weight: 700;
-
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.22);
-  backdrop-filter: blur(6px);
-
-  box-shadow: 0 10px 32px rgba(0,0,0,0.45);
-}
-
-.navBtn:hover{
-  background: rgba(255,255,255,0.18);
-}
-
-.shareRow{
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.iconBtn{
-  width: 38px;
-  height: 38px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.22);
-
-  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
-}
-
-.iconBtn svg{
-  width: 18px;
-  height: 18px;
-  fill: white;
-}
-
-/* ===== Sticky bottom button bar ===== */
-
-.barBtn:hover{
-  background: rgba(255,255,255,0.18);
-}
-
-.barBtn:active{
-  transform: translateY(1px);
-}
-
-/* Prevent page content being hidden behind bar */
-
-body{
-  padding-bottom: 64px;
-}
-
-/* ===== Sticky bottom button bar ===== */
-/* ===== TRUE FIXED BOTTOM DOCK ===== */
-
-.bottomBar{
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  height: 60px;                 /* fixed height — no stretching */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(14px);
-
-  border-top: 1px solid rgba(255,255,255,0.18);
-  box-shadow: 0 -16px 40px rgba(0,0,0,0.6);
-
-  z-index: 99999;
-
-  overflow: hidden;             /* prevents expansion */
-}
-
-/* ===== Bottom-of-page footer ===== */
-
-.siteFooter{
-  margin: 28px auto 20px;
-  max-width: 380px;
-  padding: 14px 12px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-
-  background: rgba(0,0,0,0.35);
-  backdrop-filter: blur(10px);
-
-  border: 1px solid rgba(255,255,255,0.16);
-  border-radius: 20px;
-
-  box-shadow: 0 18px 60px rgba(0,0,0,0.55);
-
-  /* FIX #1: ensure footer is above canvas/overlays visually and clickably */
-  position: relative;
-  z-index: 4;
-}
-
-/* Page buttons row */
-.footerNav{
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-/* Social buttons row */
-.footerShare{
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-/* Page buttons */
-.footerBtn{
-  padding: 8px 16px;
-  border-radius: 999px;
-  text-decoration: none;
-  color: rgba(255,255,255,0.95);
-  font-weight: 700;
-
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.22);
-
-  transition: background 0.15s ease;
-}
-
-.footerBtn:hover{
-  background: rgba(255,255,255,0.18);
-}
-
-/* Social icon buttons */
-.iconBtn{
-  width: 40px;
-  height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.22);
-}
-
-.iconBtn svg{
-  width: 18px;
-  height: 18px;
-  fill: white;
-}
-
-/* EXTRA HARD FIX: make sure footer links always accept clicks */
-.siteFooter a,
-.footerNav a,
-.footerShare a,
-.footerBtn,
-.iconBtn{
-  pointer-events: auto;
-}
-
-/* === KILL THE OLD FIXED BOTTOM DOCK (rectangle) === */
-.bottomBar{ display:none !important; }
-.barBtn{ display:none !important; }
-body{ padding-bottom: 5px !important; }
-
-/* =========================================
-   BIG BANG flash + punch (NEW)
-   ========================================= */
-
-body.bigbang::before{
-  content:"";
-  position: fixed;
-  inset: 0;
-  z-index: 99998;
-  pointer-events: none;
-  background:
-    radial-gradient(900px 650px at 50% 42%,
-      rgba(255,255,255,0.82),
-      rgba(255,206,105,0.28) 35%,
-      rgba(175,110,255,0.18) 58%,
-      rgba(0,0,0,0.0) 76%);
-  opacity: 0;
-  animation: bigbangFlash 650ms ease-out forwards;
-}
-
-@keyframes bigbangFlash{
-  0%   { opacity: 0; transform: scale(0.985); }
-  14%  { opacity: 1; transform: scale(1.02); }
-  55%  { opacity: 0.35; transform: scale(1.01); }
-  100% { opacity: 0; transform: scale(1.00); }
-}
-
-/* Tiny “impact” feel on cards */
-body.bigbang .card{
-  animation: bigbangPunch 420ms ease-out;
-}
-
-@keyframes bigbangPunch{
-  0%   { transform: translate3d(0,0,0) scale(1); }
-  18%  { transform: translate3d(0,-2px,0) scale(1.012); }
-  48%  { transform: translate3d(0,1px,0) scale(1.006); }
-  100% { transform: translate3d(0,0,0) scale(1); }
-}
-
-/* =========================================
-   Alarm ringing shake (now lasts until Sleep/Stop)
-   ========================================= */
 @keyframes cardShake {
   0%   { transform: translate3d(0,0,0) rotate(0deg); }
   10%  { transform: translate3d(-2px, 1px, 0) rotate(-0.25deg); }
@@ -1513,52 +640,94 @@ body.bigbang .card{
   90%  { transform: translate3d(-2px, 1px, 0) rotate(-0.25deg); }
   100% { transform: translate3d(0,0,0) rotate(0deg); }
 }
-
 body.alarm-ringing .alarmCard,
 body.alarm-ringing .timerCard,
 body.alarm-ringing .ytCard{
   animation: cardShake 0.35s infinite;
 }
 
-/* =========================================
-   BIG BANG overlay + turbo shake (NEW)
-   ========================================= */
+/* =========================
+   BIG BANG — Terminator collapse → white dot → explode + warp
+   Triggered by: body.bb-seq
+   ========================= */
 
-body.bigbang::before{
-  content:"";
+/* 1) Warp the whole UI layer slightly */
+body.bb-seq .layout,
+body.bb-seq .topBar{
+  animation: bbWarp 1200ms ease-in-out both;
+  transform-origin: 50% 45%;
+}
+@keyframes bbWarp{
+  0%   { filter: blur(0px) contrast(1) saturate(1); transform: scale(1) rotate(0deg); }
+  25%  { filter: blur(0.8px) contrast(1.25) saturate(1.4); transform: scale(1.02) rotate(-0.4deg); }
+  55%  { filter: blur(1.6px) contrast(1.6) saturate(1.8); transform: scale(1.06) rotate(0.6deg); }
+  100% { filter: blur(0px) contrast(1) saturate(1); transform: scale(1) rotate(0deg); }
+}
+
+/* 2) Black curtain closes in */
+.bbOverlay{
   position: fixed;
   inset: 0;
-  z-index: 99998;
   pointer-events: none;
-  background:
-    radial-gradient(1100px 780px at 50% 42%,
-      rgba(255,255,255,0.90),
-      rgba(255,206,105,0.32) 36%,
-      rgba(175,110,255,0.22) 58%,
-      rgba(0,0,0,0.0) 78%);
+  z-index: 999990;
+  background: #000;
   opacity: 0;
-  animation: bigbangFlash 900ms ease-out forwards;
+}
+body.bb-seq .bbOverlay{
+  animation: bbBlackIn 900ms ease-out forwards;
+}
+@keyframes bbBlackIn{
+  0%   { opacity: 0; }
+  35%  { opacity: 0.65; }
+  100% { opacity: 0.92; }
 }
 
-@keyframes bigbangFlash{
-  0%   { opacity: 0; transform: scale(0.985); }
-  12%  { opacity: 1; transform: scale(1.03); }
-  40%  { opacity: 0.55; transform: scale(1.02); }
-  100% { opacity: 0; transform: scale(1.00); }
+/* 3) White dot appears and tightens to center (like terminator iris) */
+.bbDot{
+  position: fixed;
+  left: 50%;
+  top: 45%;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  margin-top: -9px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999991;
+
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255,255,255,1), rgba(255,255,255,0.0) 70%);
+  filter: drop-shadow(0 0 24px rgba(255,255,255,0.55));
+  transform: scale(0.2);
+}
+body.bb-seq .bbDot{
+  animation: bbDotSequence 1700ms ease-in-out forwards;
+}
+@keyframes bbDotSequence{
+  /* dot becomes the only thing visible */
+  0%   { opacity: 0; transform: scale(0.2); }
+  25%  { opacity: 1; transform: scale(1.1); }
+  55%  { opacity: 1; transform: scale(0.55); }
+  72%  { opacity: 1; transform: scale(0.25); } /* tiny dot */
+  100% { opacity: 0; transform: scale(90); }   /* EXPLODE outward */
 }
 
-/* Extra violent shake on big bang moment */
-@keyframes bigbangShake {
-  0%   { transform: translate3d(0,0,0) rotate(0deg); }
-  12%  { transform: translate3d(-6px, 3px, 0) rotate(-0.9deg); }
-  24%  { transform: translate3d(6px, -3px, 0) rotate(0.9deg); }
-  40%  { transform: translate3d(-5px, -2px, 0) rotate(-0.6deg); }
-  58%  { transform: translate3d(5px, 2px, 0) rotate(0.6deg); }
-  100% { transform: translate3d(0,0,0) rotate(0deg); }
+/* 4) White flash on explosion */
+.bbFlash{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999992;
+  opacity: 0;
+  background: #fff;
 }
-
-body.bigbang-shake .alarmCard,
-body.bigbang-shake .timerCard,
-body.bigbang-shake .ytCard{
-  animation: bigbangShake 0.22s infinite;
+body.bb-seq .bbFlash{
+  animation: bbFlash 2400ms ease-out forwards;
+}
+@keyframes bbFlash{
+  0%   { opacity: 0; }
+  72%  { opacity: 0; }
+  78%  { opacity: 0.95; } /* explosion peak */
+  90%  { opacity: 0.22; }
+  100% { opacity: 0; }
 }

@@ -1,3 +1,7 @@
+<!-- =========================
+     Cosmiclock — index.html (FULL)
+     - Includes Big Bang overlay layers (Terminator effect)
+     ========================= -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -5,17 +9,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Cosmiclock — Online Alarm Clock</title>
-  <meta name="description"
-        content="Cosmiclock is a calming online alarm clock with gentle sounds, YouTube wake-up videos, timers, stopwatch, and cosmic visuals." />
-  <meta name="keywords"
-        content="online alarm clock, gentle alarm, youtube alarm, timer, stopwatch, meditation alarm, morning alarm" />
+  <meta name="description" content="Cosmiclock is a calming online alarm clock with gentle sounds, YouTube wake-up videos, timers, stopwatch, and cosmic visuals." />
+  <meta name="keywords" content="online alarm clock, gentle alarm, youtube alarm, timer, stopwatch, meditation alarm, morning alarm" />
   <meta name="author" content="Cosmiclock" />
   <meta name="theme-color" content="#1a0f2e" />
   <meta name="robots" content="index, follow" />
 
   <link rel="canonical" href="https://keetdaheat1.github.io/cosmiclock/" />
   <link rel="icon" href="favicon.ico" />
-  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="styles.css?v=7" />
 
   <script type="application/ld+json">
   {
@@ -33,9 +35,17 @@
 </head>
 
 <body>
+  <!-- Background video -->
   <video id="bgVideo" class="bgVideo" autoplay muted loop playsinline></video>
+
+  <!-- Overlay layers -->
   <div class="bgOverlay"></div>
   <canvas id="fxCanvas"></canvas>
+
+  <!-- BIG BANG overlay layers (Terminator collapse + explode) -->
+  <div class="bbOverlay" aria-hidden="true"></div>
+  <div class="bbDot" aria-hidden="true"></div>
+  <div class="bbFlash" aria-hidden="true"></div>
 
   <header class="topBar">
     <div class="titleCloud">
@@ -149,7 +159,6 @@
           <svg id="analogClock" class="analogClock compactClock" viewBox="0 0 240 240" aria-label="Analog clock with alarm overlay">
             <circle cx="120" cy="120" r="106" class="clockRing"></circle>
             <circle cx="120" cy="120" r="94" class="clockInner"></circle>
-
             <g id="clockTicks"></g>
 
             <g id="clockHandsNow">
@@ -182,6 +191,8 @@
             <select id="preset">
               <option value="">(preset)</option>
               <option value="https://www.youtube.com/watch?v=IvfolR9QOEc">Preset — Soft peaceful morning mix (1h)</option>
+              <option value="https://www.youtube.com/watch?v=zSQdXhxkjw4">Preset — Good Morning Meditation (1h)</option>
+              <option value="https://www.youtube.com/watch?v=yK2dCwjNhMs">Preset — Calm Morning gentle wake up</option>
             </select>
           </label>
 
@@ -240,7 +251,7 @@
               <span>Enable</span>
             </label>
 
-            <label class="alarmCenterToggle" title="If enabled, Big Bang hits 3 minutes after alarm start (if still ringing)">
+            <label class="alarmCenterToggle" title="If enabled, Big Bang hits 3 minutes after the alarm starts (if still ringing)">
               <input id="bigBangAfter3" type="checkbox" />
               <span>Big Bang +3m</span>
             </label>
