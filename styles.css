@@ -1496,3 +1496,69 @@ body.bigbang .card{
   48%  { transform: translate3d(0,1px,0) scale(1.006); }
   100% { transform: translate3d(0,0,0) scale(1); }
 }
+
+/* =========================================
+   Alarm ringing shake (now lasts until Sleep/Stop)
+   ========================================= */
+@keyframes cardShake {
+  0%   { transform: translate3d(0,0,0) rotate(0deg); }
+  10%  { transform: translate3d(-2px, 1px, 0) rotate(-0.25deg); }
+  20%  { transform: translate3d(2px, -1px, 0) rotate(0.25deg); }
+  30%  { transform: translate3d(-3px, 0px, 0) rotate(-0.35deg); }
+  40%  { transform: translate3d(3px, 1px, 0) rotate(0.35deg); }
+  50%  { transform: translate3d(-2px, -1px, 0) rotate(-0.25deg); }
+  60%  { transform: translate3d(2px, 1px, 0) rotate(0.25deg); }
+  70%  { transform: translate3d(-3px, 0px, 0) rotate(-0.35deg); }
+  80%  { transform: translate3d(3px, -1px, 0) rotate(0.35deg); }
+  90%  { transform: translate3d(-2px, 1px, 0) rotate(-0.25deg); }
+  100% { transform: translate3d(0,0,0) rotate(0deg); }
+}
+
+body.alarm-ringing .alarmCard,
+body.alarm-ringing .timerCard,
+body.alarm-ringing .ytCard{
+  animation: cardShake 0.35s infinite;
+}
+
+/* =========================================
+   BIG BANG overlay + turbo shake (NEW)
+   ========================================= */
+
+body.bigbang::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  pointer-events: none;
+  background:
+    radial-gradient(1100px 780px at 50% 42%,
+      rgba(255,255,255,0.90),
+      rgba(255,206,105,0.32) 36%,
+      rgba(175,110,255,0.22) 58%,
+      rgba(0,0,0,0.0) 78%);
+  opacity: 0;
+  animation: bigbangFlash 900ms ease-out forwards;
+}
+
+@keyframes bigbangFlash{
+  0%   { opacity: 0; transform: scale(0.985); }
+  12%  { opacity: 1; transform: scale(1.03); }
+  40%  { opacity: 0.55; transform: scale(1.02); }
+  100% { opacity: 0; transform: scale(1.00); }
+}
+
+/* Extra violent shake on big bang moment */
+@keyframes bigbangShake {
+  0%   { transform: translate3d(0,0,0) rotate(0deg); }
+  12%  { transform: translate3d(-6px, 3px, 0) rotate(-0.9deg); }
+  24%  { transform: translate3d(6px, -3px, 0) rotate(0.9deg); }
+  40%  { transform: translate3d(-5px, -2px, 0) rotate(-0.6deg); }
+  58%  { transform: translate3d(5px, 2px, 0) rotate(0.6deg); }
+  100% { transform: translate3d(0,0,0) rotate(0deg); }
+}
+
+body.bigbang-shake .alarmCard,
+body.bigbang-shake .timerCard,
+body.bigbang-shake .ytCard{
+  animation: bigbangShake 0.22s infinite;
+}
